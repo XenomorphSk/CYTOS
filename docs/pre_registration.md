@@ -318,3 +318,35 @@ que 100 genes, para topologias de regulacao muito diferentes das geradas
 pelo GeneNetWeaver, ou superioridade da TTN em tarefas alem de predicao
 de dinamica temporal (ex. inferencia de topologia, que e a tarefa
 original do DREAM4 Challenge 2 e nao foi testada aqui).
+
+## 14. Robustez contra baseline mais forte - GAT (2026-06-24)
+
+Repetido o experimento completo (mesmas 5 redes, 2 tamanhos, 20 seeds)
+substituindo o baseline GCN por GAT (Graph Attention Network), com
+casamento de parametros refeito do zero para a nova arquitetura.
+
+**Resultado: H1 e H1b passaram em 10/10 configuracoes, novamente.**
+
+| size | network | label | corr. TTN | corr. GAT |
+|---|---|---|---|---|
+| 10 | 1 | confirmatorio | 0.932 | 0.696 |
+| 10 | 2 | confirmatorio | 0.935 | 0.611 |
+| 10 | 3 | exploratorio | 0.911 | 0.536 |
+| 10 | 4 | exploratorio | 0.921 | 0.623 |
+| 10 | 5 | exploratorio | 0.952 | 0.611 |
+| 100 | 1 | confirmatorio | 0.939 | 0.670 |
+| 100 | 2 | confirmatorio | 0.922 | 0.407 |
+| 100 | 3 | exploratorio | 0.945 | 0.492 |
+| 100 | 4 | exploratorio | 0.930 | 0.511 |
+| 100 | 5 | exploratorio | 0.939 | 0.396 |
+
+GAT e claramente um baseline mais forte que GCN (correlacao sobe para
+0.40-0.70, contra 0.22-0.62 do GCN) - o mecanismo de atencao ajuda a
+capturar parte da estrutura de longo alcance. Mas a TTN continua estavel em
+0.91-0.95 e vence em todas as 10 configuracoes, com a mesma magnitude de
+significancia maxima do teste (p=1.9e-6 para H1).
+
+**Isso fortalece materialmente a conclusao**: o resultado nao depende de
+comparar com um baseline fraco. Mesmo dando ao adversario um mecanismo de
+atencao que deveria ajudar a capturar dependencias de longo alcance, a
+vantagem estrutural da TTN (hierarquia fixada por comunidades) persiste.

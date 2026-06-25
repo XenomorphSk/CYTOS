@@ -267,4 +267,6 @@ def run_all(config_path="config/config.yaml"):
 
 
 if __name__ == "__main__":
-    run_all()
+    import sys
+    config_path = sys.argv[1] if len(sys.argv) > 1 else "config/config.yaml"
+    run_all(config_path)

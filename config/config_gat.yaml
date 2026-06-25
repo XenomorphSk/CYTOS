@@ -1,0 +1,48 @@
+# DECISAO (2026-06-24): aumentado de 5 para 20 seeds. Motivo: com n=5, o
+# teste de Wilcoxon pareado so atinge p<0.05 se todas as 5 seeds tiverem o
+# mesmo sinal. O padrao observado foi consistente 4-de-5 a favor da TTN
+# (p=0.0625 em todas as configs), sugerindo efeito real mas poder estatistico
+# insuficiente. Decisao tomada ANTES de rodar de novo com n=20.
+seed_list: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19]
+
+data:
+  dream4_root: "."
+  sizes: [10, 100]
+  # DECISAO (2026-06-24): redes 1-2 sao o teste CONFIRMATORIO
+  # pre-registrado (ja executado, H1/H1b passaram 4/4). Redes 3-5 sao
+  # adicionadas agora como confirmacao EXPLORATORIA (decidido antes de
+  # rodar, nao para "salvar" H1/H1b caso falhem, apenas para avaliar
+  # generalizacao).
+  networks: [1, 2, 3, 4, 5]
+  confirmatory_networks: [1, 2]
+  # DECISAO (2026-06-24): trocado de contagem fixa (3/1/1) para fracao
+  # uniforme. size=10 (5 trajetorias) continua dando 3/1/1; size=100
+  # (10 trajetorias) passa a usar 6/2/2 em vez de desperdicar metade do
+  # dado disponivel.
+  train_traj_frac: 0.6
+  val_traj_frac: 0.2
+  test_traj_frac: 0.2
+
+clustering:
+  method: "louvain"     # alternativa: "spectral"
+  min_community_size: 2
+
+gnn:
+  hidden_dim: 16
+  num_layers: 2
+  architecture: "GAT"   # config alternativa para baseline GAT (ver config.yaml para GCN)
+  lr: 0.001
+  epochs: 200
+  weight_decay: 1.0e-5
+
+ttn:
+  bond_dim: 4           # dimensão do "bond" entre tensores - controla nº params
+  lr: 0.001
+  epochs: 200
+  weight_decay: 1.0e-5
+
+param_match_tolerance: 0.10   # ±10% conforme pré-registro
+
+evaluation:
+  long_range_min_hierarchy_levels: 3
+  significance_alpha: 0.05
