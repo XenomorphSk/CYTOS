@@ -9,7 +9,7 @@
 
 ## Abstract
 
-Gene regulatory networks (GRNs) exhibit modular, hierarchical topology, yet standard graph neural networks (GNNs) treat them as flat graphs and must learn this structure implicitly through message passing. We test whether a Tree Tensor Network (TTN) - a model class originally developed in quantum many-body physics to efficiently represent systems with hierarchical entanglement structure - outperforms a parameter-matched GNN baseline at predicting GRN expression dynamics, when the TTN's hierarchy is fixed by community detection on the regulatory graph rather than learned. Using a pre-registered protocol (hypotheses, success criteria, and statistical thresholds fixed before running on real data), we test both models on the DREAM4 In Silico Networks benchmark across all 5 available networks at two sizes (10 and 100 genes), with model parameter counts matched within ~10%. The TTN outperforms the GNN baseline on parameter efficiency (4-6x lower MSE per parameter) and on capturing long-range correlations between genes in different community modules (TTN: 0.91-0.95 across all configurations; GNN: 0.22-0.62, degrading further as network size increases). The result replicates in 10/10 tested configurations. We report this as a pilot-scale, falsification-driven result on a simulated benchmark, not a claim about real biological systems, and document every methodological correction made during development.
+Gene regulatory networks (GRNs) exhibit modular, hierarchical topology, yet standard graph neural networks (GNNs) treat them as flat graphs and must learn this structure implicitly through message passing. We test whether a Tree Tensor Network (TTN) - a model class originally developed in quantum many-body physics to efficiently represent systems with hierarchical entanglement structure - outperforms a parameter-matched GNN baseline at predicting GRN expression dynamics, when the TTN's hierarchy is fixed by community detection on the regulatory graph rather than learned. Using a pre-registered protocol (hypotheses, success criteria, and statistical thresholds fixed before running on real data), we test both models on the DREAM4 In Silico Networks benchmark across all 5 available networks at two sizes (10 and 100 genes), with model parameter counts matched within ~10%. The TTN outperforms the GNN baseline on parameter efficiency (4-6x lower MSE per parameter) and on capturing long-range correlations between genes in different community modules (TTN: 0.91-0.95 across all configurations; GCN baseline: 0.22-0.62, degrading further as network size increases). The result replicates in 10/10 tested configurations and is robust to baseline strength: repeating the full experiment with a Graph Attention Network (GAT) baseline - which captures substantially more long-range structure than GCN (0.40-0.70) - the TTN still wins in 10/10 configurations. We report this as a pilot-scale, falsification-driven result on a simulated benchmark, not a claim about real biological systems, and document every methodological correction made during development.
 
 ---
 
@@ -72,18 +72,37 @@ Networks 1 and 2 (of 5 available per size) were designated as the confirmatory t
 
 H1 and H1b are each confirmed in 10/10 configurations. The p-values for both tests saturate near the minimum achievable value given n=20 paired seeds (Wilcoxon) - this reflects near-unanimous seed-level agreement on direction, not a fine-grained measure of effect size. Effect size should be read from the MSE-per-parameter and correlation columns directly: the TTN's long-range correlation is stable (0.91-0.95) across all networks and both sizes, while the GNN's degrades as network size grows (10 genes: 0.33-0.62; 100 genes: 0.25-0.46).
 
-## 5. Limitations
+## 5. Robustness check: stronger baseline (GAT)
+
+To rule out the possibility that the result depends on comparing against a weak baseline, the full experiment (all 5 networks, both sizes, 20 seeds) was repeated with a Graph Attention Network (GAT) in place of the GCN, with parameter matching redone from scratch for the new architecture (GAT carries more parameters per layer due to attention weights).
+
+| Size | Network | Status | Corr. TTN | Corr. GAT |
+|---|---|---|---|---|
+| 10 | 1 | confirmatory | 0.932 | 0.696 |
+| 10 | 2 | confirmatory | 0.935 | 0.611 |
+| 10 | 3 | exploratory | 0.911 | 0.536 |
+| 10 | 4 | exploratory | 0.921 | 0.623 |
+| 10 | 5 | exploratory | 0.952 | 0.611 |
+| 100 | 1 | confirmatory | 0.939 | 0.670 |
+| 100 | 2 | confirmatory | 0.922 | 0.407 |
+| 100 | 3 | exploratory | 0.945 | 0.492 |
+| 100 | 4 | exploratory | 0.930 | 0.511 |
+| 100 | 5 | exploratory | 0.939 | 0.396 |
+
+GAT is a substantially stronger baseline than GCN - its attention mechanism captures meaningfully more long-range structure (0.40-0.70, vs. 0.22-0.62 for GCN). However, H1 and H1b are confirmed in 10/10 configurations again: the TTN remains stable at 0.91-0.95 and outperforms GAT in every tested configuration, with the same maximal statistical significance (p=1.9e-6 for H1) observed with the GCN baseline. This indicates the result is not an artifact of comparing against a particularly weak baseline architecture.
+
+## 6. Limitations
 
 - **DREAM4 is itself a simulated benchmark** (generated via GeneNetWeaver, parameterized ODEs), not direct experimental measurement. Results should be read as benchmark performance, not a claim about real biological systems.
 - **Small test sets**: one held-out trajectory per network/size, per the pre-registered split.
 - **Only two network sizes tested** (10, 100 genes); scaling behavior beyond this range is unknown.
-- **GNN baseline is a simple 2-layer GCN**; a stronger baseline (GAT, or a recurrent model per gene) has not yet been tested.
 - **The original DREAM4 Challenge 2 task (network topology inference) was not addressed** - this work tests dynamics prediction given a known topology, which is a different (and easier) problem.
 - p-values for the secondary metric (H1b) are identical across nearly all configurations, reflecting a ceiling effect of the statistical test given sample size, not a precise measure of effect magnitude.
+- A recurrent baseline (e.g., per-gene LSTM/GRU) has not yet been tested; GCN and GAT were the two baselines evaluated.
 
-## 6. Conclusion
+## 7. Conclusion
 
-Under the criteria fixed before observing the data, both H1 and H1b are supported by the DREAM4 benchmark across all 5 available networks and both tested sizes. The most substantive finding - that the GNN baseline's ability to capture long-range, cross-community correlation degrades as network size grows while the TTN's does not - is consistent with the theoretical motivation (modular structure becomes more pronounced, not less, as networks grow, and the TTN's fixed hierarchy exploits this directly while flat message-passing does not). This is a positive pilot-scale result, not a final claim; the limitations above outline the next steps required before treating it as established.
+Under the criteria fixed before observing the data, both H1 and H1b are supported by the DREAM4 benchmark across all 5 available networks and both tested sizes, against two different GNN baselines (GCN and GAT). The most substantive finding - that GNN baselines' ability to capture long-range, cross-community correlation degrades as network size grows while the TTN's does not, and that this gap persists even against a stronger attention-based baseline - is consistent with the theoretical motivation (modular structure becomes more pronounced, not less, as networks grow, and the TTN's fixed hierarchy exploits this directly while flat or attention-based message-passing does not). This is a positive pilot-scale result, not a final claim; the limitations above outline the next steps required before treating it as established.
 
 ## Reproducibility
 
