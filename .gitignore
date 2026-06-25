@@ -1,0 +1,22 @@
+# Dados do DREAM4 (Synapse tem termos de uso proprios - NAO redistribuir)
+data/raw/dream4/
+DREAM4_InSilico_Size10/
+DREAM4_InSilico_Size100/
+DREAM4_Challenge2_GoldStandards/
+data/processed/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+*.egg-info/
+.venv/
+venv/
+
+# Logs de experimento
+experiment_log*.txt
+
+# Sistema
+.DS_Store
+*.swp
