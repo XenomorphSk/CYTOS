@@ -350,3 +350,122 @@ significancia maxima do teste (p=1.9e-6 para H1).
 comparar com um baseline fraco. Mesmo dando ao adversario um mecanismo de
 atencao que deveria ajudar a capturar dependencias de longo alcance, a
 vantagem estrutural da TTN (hierarquia fixada por comunidades) persiste.
+
+## 15. Pre-Registro - Fase 2: Entropia de Bond como Proxy de Sensibilidade a Perturbacao (2026-06-24)
+
+### Motivacao
+
+A TTN treinada, ao contrario da GNN, tem uma quantidade nativa inspirada em
+fisica de tensor networks: a estrutura de valores singulares em qualquer
+"bond" (aresta) da arvore. Testamos se essa quantidade prediz algo
+biologicamente relevante - especificamente, se comunidades de genes cuja
+conexao com o resto da rede tem maior "entropia de bond" sao tambem as
+comunidades mais sensiveis a perturbacao (knockout simulado).
+
+### Limitacao metodologica reconhecida ANTES de implementar
+
+Entropia de emaranhamento de von Neumann rigorosa exige que a rede esteja
+em forma canonica (tensores ortogonais/isometricos em todos os ramos,
+exceto no corte de interesse) - nossa TTN treinada via gradiente
+descendente NAO esta nessa forma. Implementar a canonicalizacao completa
+e matematicamente bem definida, mas e codigo novo significativo, com
+risco de bug nao desprezivel sem poder testar com torch ao vivo.
+
+**Decisao (2026-06-24):** usar um proxy mais simples e honesto - chamado
+aqui de **"entropia local de bond"**, nao "entropia de emaranhamento de
+von Neumann". Calculada via SVD direto da matriz de pesos do no da arvore
+onde uma comunidade especifica se conecta ao resto da rede (sem
+canonicalizacao previa dos outros ramos). Reconhecidamente uma
+aproximacao, nao a quantidade rigorosa da fisica de tensor networks.
+
+### Hipotese (H2)
+
+Comunidades de genes com maior entropia local de bond (na TTN treinada)
+tem maior sensibilidade dinamica a perturbacao (knockout simulado),
+medida pelo impacto na predicao de genes FORA da comunidade.
+
+**H2 (hipotese de trabalho):** correlacao de Spearman positiva e
+significativa entre entropia local de bond e sensibilidade a perturbacao,
+agregando todas as comunidades de todas as configuracoes ja testadas
+(10 configs: 5 redes x 2 tamanhos).
+
+**H0 (nula):** nenhuma correlacao significativa.
+
+### Operacionalizacao
+
+1. **Entropia local de bond** (por comunidade): identificar o no do
+   plano de execucao da arvore-raiz onde aquela comunidade se conecta
+   ao resto. Reformatar a matriz de pesos desse no em uma matriz
+   (dim_comunidade, dim_resto), calcular SVD, normalizar valores
+   singulares ao quadrado em probabilidades, calcular entropia de
+   Shannon: S = -sum(p_i * log(p_i)).
+
+2. **Sensibilidade a perturbacao** (por comunidade): para cada amostra
+   de teste, zerar a expressao de todos os genes da comunidade
+   (knockout simulado) e medir a diferenca media absoluta na predicao
+   dos genes FORA da comunidade, comparado a predicao sem perturbacao.
+
+3. **Modelo usado:** o modelo TTN ja treinado (seed=0) de cada uma das
+   10 configuracoes ja confirmadas em H1/H1b.
+
+### Estatistica e criterio de sucesso
+
+Correlacao de Spearman entre (entropia local de bond, sensibilidade a
+perturbacao), agregando todas as comunidades de todas as 10
+configuracoes. **Criterio de sucesso pre-registrado:** rho > 0 com
+p < 0.05.
+
+### Status
+
+Teste EXPLORATORIO de uma extensao nova. Resultado, qualquer que seja,
+sera reportado - incluindo se H2 falhar.
+
+### Decisao (2026-06-24): teste de robustez com multiplas seeds
+
+**Antes de rodar**, decisao pre-registrada: repetir o piloto com 5 seeds
+(0-4) por configuracao (50 treinos de TTN no total). Criterio de
+sucesso: agregar todos os pares (entropia, sensibilidade) de todas as
+seeds e configuracoes num unico teste de Spearman (mesma logica de
+H1b), criterio rho>0 e p<0.05. Reportar tambem, como checagem secundaria
+descritiva (nao eliminatoria), em quantas das 5 seeds a correlacao
+individual por seed e positiva.
+
+### Resultado do teste de robustez
+
+**H2 confirmado de forma robusta.** Por seed:
+
+| Seed | rho | p |
+|---|---|---|
+| 0 | 0.691 | 1.02e-08 |
+| 1 | 0.248 | 0.073 (nao significativo individualmente, mas direcao positiva) |
+| 2 | 0.498 | 1.46e-04 |
+| 3 | 0.572 | 7.59e-06 |
+| 4 | 0.531 | 4.27e-05 |
+
+**Agregado (265 pares comunidade x seed, todas as configs):** rho = 0.5052,
+p = 1.43e-18. **5/5 seeds com correlacao positiva** (4/5
+individualmente significativas a p<0.05).
+
+Isso nao e mais um achado de uma unica inicializacao - e um padrao
+consistente entre 5 seeds independentes. A magnitude da correlacao varia
+(0.25 a 0.69) mas a direcao nunca inverte. Pelos criterios definidos
+antes de rodar este teste de robustez, **H2 esta confirmado com o mesmo
+nivel de rigor usado em H1/H1b.**
+
+### Conclusao da Fase 2
+
+Uma quantidade derivada da estrutura de tensor network da TTN (entropia
+local de bond - um proxy simplificado, nao entropia de emaranhamento de
+von Neumann rigorosa) prediz, de forma estatisticamente robusta e
+biologicamente interpretavel, a sensibilidade de uma comunidade genica a
+perturbacao - sem que essa relacao tenha sido explicitamente ensinada ao
+modelo durante o treino (que otimiza apenas para prever dinamica de
+expressao). Este e o resultado mais original deste projeto: conecta uma
+ferramenta da fisica de tensor networks a uma propriedade biologica
+interpretavel, de um jeito que nenhuma GNN convencional permite calcular
+nativamente.
+
+**Ressalva que permanece:** "entropia local de bond" e proxy, nao
+entropia de emaranhamento rigorosa (requer canonicalizacao completa da
+rede, nao implementada - ver Secao 15). Qualquer escrita sobre este
+resultado deve manter essa distincao explicita.

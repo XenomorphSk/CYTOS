@@ -1,11 +1,7 @@
 """
 src/experiments/runner.py
 
-Orquestra o experimento completo do pre-registro, usando dados REAIS do
-DREAM4 (rede 1 e 2, por tamanho), com seeds paralelizadas via
-ProcessPoolExecutor.
-
-Rodar com: python -m src.experiments.runner
+Orquestra o experimento completo do pre-registro - VECTORIZED (2026-06-24).
 """
 
 from __future__ import annotations
@@ -18,8 +14,16 @@ import torch
 from scipy.stats import wilcoxon
 
 from src.data.pipeline import build_dataset, load_config, split_trajectories_by_fraction
-from src.models.gnn_baseline import GNNBaseline, train_gnn
+from src.models.gnn_baseline import GNNBaseline, make_batched_edge_index, train_gnn
 from src.models.ttn_model import TTNModel, train_ttn
+
+
+def try_compile(model):
+    # DESABILITADO (2026-06-24): torch.compile causou regressao severa
+    # de performance (rodada de 55min, mais lenta que sem vetorizacao),
+    # provavelmente por recompilacao repetida devido a tamanhos de lote
+    # variaveis + fluxo de controle dinamico da TTN.
+    return model
 
 
 def match_parameter_counts(hierarchy, gene_names, num_nodes, cfg):
@@ -79,24 +83,13 @@ def long_range_correlation(pred, true, hierarchy, gene_names):
     return float(np.corrcoef(pred_diffs, true_diffs)[0, 1])
 
 
-def trajectories_to_gnn_pairs(trajectories, edge_index):
-    pairs = []
+def trajectories_to_stacked_arrays(trajectories):
+    xs, x_nexts = [], []
     for traj in trajectories:
         for t in range(len(traj) - 1):
-            x_t = torch.tensor(traj[t], dtype=torch.float32).unsqueeze(-1)
-            x_next = torch.tensor(traj[t + 1], dtype=torch.float32).unsqueeze(-1)
-            pairs.append((x_t, edge_index, x_next))
-    return pairs
-
-
-def trajectories_to_ttn_pairs(trajectories):
-    pairs = []
-    for traj in trajectories:
-        for t in range(len(traj) - 1):
-            x_t = torch.tensor(traj[t], dtype=torch.float32)
-            x_next = torch.tensor(traj[t + 1], dtype=torch.float32)
-            pairs.append((x_t, x_next))
-    return pairs
+            xs.append(traj[t])
+            x_nexts.append(traj[t + 1])
+    return np.array(xs, dtype=np.float32), np.array(x_nexts, dtype=np.float32)
 
 
 def run_one_seed(args):
@@ -109,26 +102,49 @@ def run_one_seed(args):
     gnn_hidden_dim = args["gnn_hidden_dim"]
     bond_dim = args["bond_dim"]
     cfg = args["cfg"]
-    gnn_train, gnn_val, gnn_test = args["gnn_train"], args["gnn_val"], args["gnn_test"]
-    ttn_train, ttn_val, ttn_test = args["ttn_train"], args["ttn_val"], args["ttn_test"]
+    num_nodes = len(gene_names)
 
-    gnn = GNNBaseline(num_nodes=len(gene_names), hidden_dim=gnn_hidden_dim, num_layers=cfg["gnn"]["num_layers"], architecture=cfg["gnn"]["architecture"])
-    gnn_result = train_gnn(gnn, gnn_train, gnn_val, lr=cfg["gnn"]["lr"], weight_decay=cfg["gnn"]["weight_decay"], epochs=cfg["gnn"]["epochs"], seed=seed)
+    x_train = torch.tensor(args["x_train"])
+    x_train_next = torch.tensor(args["x_train_next"])
+    x_val = torch.tensor(args["x_val"])
+    x_val_next = torch.tensor(args["x_val_next"])
+    x_test = torch.tensor(args["x_test"])
+    x_test_next = torch.tensor(args["x_test_next"])
+
+    gnn = GNNBaseline(num_nodes=num_nodes, hidden_dim=gnn_hidden_dim, num_layers=cfg["gnn"]["num_layers"], architecture=cfg["gnn"]["architecture"])
+    gnn_compiled = try_compile(gnn)
+    gnn_result = train_gnn(
+        gnn_compiled,
+        x_train.unsqueeze(-1), x_train_next.unsqueeze(-1),
+        x_val.unsqueeze(-1), x_val_next.unsqueeze(-1),
+        edge_index=edge_index, num_nodes=num_nodes,
+        lr=cfg["gnn"]["lr"], weight_decay=cfg["gnn"]["weight_decay"],
+        epochs=cfg["gnn"]["epochs"], seed=seed,
+    )
     gnn_mse_per_param = gnn_result["best_val_mse"] / gnn.count_parameters()
 
     ttn = TTNModel(hierarchy=hierarchy, gene_names=gene_names, bond_dim=bond_dim)
-    ttn_result = train_ttn(ttn, ttn_train, ttn_val, lr=cfg["ttn"]["lr"], weight_decay=cfg["ttn"]["weight_decay"], epochs=cfg["ttn"]["epochs"], seed=seed)
+    ttn_compiled = try_compile(ttn)
+    ttn_result = train_ttn(
+        ttn_compiled,
+        x_train, x_train_next, x_val, x_val_next,
+        lr=cfg["ttn"]["lr"], weight_decay=cfg["ttn"]["weight_decay"],
+        epochs=cfg["ttn"]["epochs"], seed=seed,
+    )
     ttn_mse_per_param = ttn_result["best_val_mse"] / ttn.count_parameters()
 
+    n_test = x_test.shape[0]
     with torch.no_grad():
         gnn.eval()
         ttn.eval()
-        gnn_preds = [gnn(x_t, edge_index).squeeze(-1).numpy() for x_t, _, _ in gnn_test]
-        ttn_preds = [ttn(x_t).numpy() for x_t, _ in ttn_test]
-        trues = [x_next.numpy() for _, _, x_next in gnn_test]
 
-        gnn_lr_corrs = [long_range_correlation(p, t, hierarchy, gene_names) for p, t in zip(gnn_preds, trues)]
-        ttn_lr_corrs = [long_range_correlation(p, t, hierarchy, gene_names) for p, t in zip(ttn_preds, trues)]
+        batched_edge_test = make_batched_edge_index(edge_index, num_nodes, n_test)
+        gnn_preds = gnn(x_test.unsqueeze(-1).reshape(-1, 1), batched_edge_test).reshape(n_test, num_nodes).numpy()
+        ttn_preds = ttn(x_test).numpy()
+        trues = x_test_next.numpy()
+
+        gnn_lr_corrs = [long_range_correlation(gnn_preds[i], trues[i], hierarchy, gene_names) for i in range(n_test)]
+        ttn_lr_corrs = [long_range_correlation(ttn_preds[i], trues[i], hierarchy, gene_names) for i in range(n_test)]
 
     return {
         "seed": seed,
@@ -141,7 +157,7 @@ def run_one_seed(args):
     }
 
 
-def run_single_config(dataset, cfg):
+def run_single_config(dataset, cfg, executor):
     gene_names = dataset.gene_names
     hierarchy = dataset.hierarchy
     graph = dataset.graph
@@ -157,12 +173,9 @@ def run_single_config(dataset, cfg):
     edges = [(node_to_idx[u], node_to_idx[v]) for u, v in graph.edges() if u in node_to_idx and v in node_to_idx]
     edge_index = torch.tensor(edges, dtype=torch.long).t().contiguous()
 
-    gnn_train = trajectories_to_gnn_pairs(train_trajs, edge_index)
-    gnn_val = trajectories_to_gnn_pairs(val_trajs, edge_index)
-    gnn_test = trajectories_to_gnn_pairs(test_trajs, edge_index)
-    ttn_train = trajectories_to_ttn_pairs(train_trajs)
-    ttn_val = trajectories_to_ttn_pairs(val_trajs)
-    ttn_test = trajectories_to_ttn_pairs(test_trajs)
+    x_train, x_train_next = trajectories_to_stacked_arrays(train_trajs)
+    x_val, x_val_next = trajectories_to_stacked_arrays(val_trajs)
+    x_test, x_test_next = trajectories_to_stacked_arrays(test_trajs)
 
     gnn_hidden_dim, bond_dim, gnn_params_matched, ttn_params_matched = match_parameter_counts(
         hierarchy, gene_names, num_nodes=len(gene_names), cfg=cfg
@@ -172,26 +185,25 @@ def run_single_config(dataset, cfg):
         {
             "seed": seed, "gene_names": gene_names, "hierarchy": hierarchy, "edge_index": edge_index,
             "gnn_hidden_dim": gnn_hidden_dim, "bond_dim": bond_dim, "cfg": cfg,
-            "gnn_train": gnn_train, "gnn_val": gnn_val, "gnn_test": gnn_test,
-            "ttn_train": ttn_train, "ttn_val": ttn_val, "ttn_test": ttn_test,
+            "x_train": x_train, "x_train_next": x_train_next,
+            "x_val": x_val, "x_val_next": x_val_next,
+            "x_test": x_test, "x_test_next": x_test_next,
         }
         for seed in cfg["seed_list"]
     ]
 
-    n_workers = min(len(seed_args), os.cpu_count() or 4)
-    print(f"  Rodando {len(seed_args)} seeds em paralelo ({n_workers} workers)...")
+    print(f"  Rodando {len(seed_args)} seeds em paralelo (pool reutilizado)...")
 
     seed_results = []
-    with ProcessPoolExecutor(max_workers=n_workers) as executor:
-        futures = {executor.submit(run_one_seed, args): args["seed"] for args in seed_args}
-        for future in as_completed(futures):
-            seed = futures[future]
-            try:
-                result = future.result()
-                seed_results.append(result)
-                print(f"    seed {seed} concluida ({len(seed_results)}/{len(seed_args)})")
-            except Exception as e:
-                print(f"    AVISO: seed {seed} falhou com erro: {e}")
+    futures = {executor.submit(run_one_seed, args): args["seed"] for args in seed_args}
+    for future in as_completed(futures):
+        seed = futures[future]
+        try:
+            result = future.result()
+            seed_results.append(result)
+            print(f"    seed {seed} concluida ({len(seed_results)}/{len(seed_args)})")
+        except Exception as e:
+            print(f"    AVISO: seed {seed} falhou com erro: {e}")
 
     gnn_mses = [r["gnn_mse_per_param"] for r in seed_results]
     ttn_mses = [r["ttn_mse_per_param"] for r in seed_results]
@@ -238,15 +250,17 @@ def run_all(config_path="config/config.yaml"):
     datasets = build_dataset(config_path)
 
     confirmatory_networks = set(cfg["data"]["confirmatory_networks"])
+    n_workers = min(len(cfg["seed_list"]), os.cpu_count() or 4)
 
     results = []
-    for dataset in datasets:
-        label = "CONFIRMATORIO" if dataset.network in confirmatory_networks else "EXPLORATORIO"
-        print(f"\n=== Config: {dataset.size} genes / rede {dataset.network} [{label}] ===")
-        result = run_single_config(dataset, cfg)
-        result["label"] = label
-        results.append(result)
-        print(result)
+    with ProcessPoolExecutor(max_workers=n_workers, max_tasks_per_child=4) as executor:
+        for dataset in datasets:
+            label = "CONFIRMATORIO" if dataset.network in confirmatory_networks else "EXPLORATORIO"
+            print(f"\n=== Config: {dataset.size} genes / rede {dataset.network} [{label}] ===")
+            result = run_single_config(dataset, cfg, executor)
+            result["label"] = label
+            results.append(result)
+            print(result)
 
     confirmatory = [r for r in results if r["label"] == "CONFIRMATORIO"]
     exploratory = [r for r in results if r["label"] == "EXPLORATORIO"]

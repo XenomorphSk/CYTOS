@@ -64,3 +64,23 @@ def test_ttn_backward_pass_runs():
     loss.backward()
     # garante que gradientes foram calculados em pelo menos um parâmetro
     assert any(p.grad is not None for p in model.parameters())
+
+def test_ttn_handles_singleton_community():
+    gene_names = ["G1", "G2", "G3"]
+    hierarchy = {"level_0": {"G1": 0, "G2": 0, "G3": 1}}
+    model = TTNModel(hierarchy=hierarchy, gene_names=gene_names, bond_dim=4)
+    x = torch.randn(len(gene_names))
+    out = model(x)
+    assert out.shape == (len(gene_names),)
+    assert "1" in model.community_finalize
+
+
+def test_ttn_genuine_contraction_uses_outer_product():
+    gene_names = ["G1", "G2"]
+    hierarchy = {"level_0": {"G1": 0, "G2": 0}}
+    model = TTNModel(hierarchy=hierarchy, gene_names=gene_names, bond_dim=4)
+    x1 = torch.tensor([0.3, 0.3])
+    x2 = torch.tensor([0.3, 0.9])
+    out1 = model(x1)
+    out2 = model(x2)
+    assert not torch.allclose(out1, out2)
