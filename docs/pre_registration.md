@@ -491,3 +491,97 @@ Spearman (entrada constante). Isso NAO invalida o resultado original de
 H2 (confirmado agregando 51 comunidades de 10 redes diferentes) - e uma
 limitacao esperada de testar em amostra pequena/pouco diversa. Adicionado
 aviso explicito na biblioteca alertando sobre isso quando detectado.
+
+## 18. Pre-Registro - Fase 3: Inferencia de Topologia via Sensibilidade a Perturbacao (2026-06-24)
+
+### Motivacao
+
+Ate aqui (H1, H1b, H2), o grafo regulatorio verdadeiro era conhecido e
+usado para definir a hierarquia da TTN. A tarefa original do DREAM4
+Challenge 2 e o problema inverso: inferir a topologia da rede a partir
+apenas da dinamica observada, sem conhecer o grafo.
+
+### Decisao de design importante
+
+A GNN nao pode ser usada como baseline aqui: seu mecanismo de
+message-passing exige um edge_index conhecido a priori - usa-la para
+inferir o proprio grafo seria circular. O baseline escolhido e um MLP
+simples (sem estrutura de grafo nenhuma, prediz cada gene a partir do
+vetor completo de todos os outros genes), analogo ao principio usado por
+metodos de referencia da area (ex. GENIE3).
+
+A TTN, para esta tarefa, usa uma hierarquia ARBITRARIA (agrupamento
+sequencial dos genes, sem nenhuma informacao de comunidade real -
+evitando dependencia circular com o grafo que queremos inferir).
+
+### Hipotese (H3)
+
+**H3:** Pontuar arestas candidatas via sensibilidade a perturbacao (zerar
+a expressao do gene i, medir o impacto na predicao do gene j) numa TTN
+(hierarquia arbitraria) produz um ranking de arestas mais proximo do
+gold standard (medido via AUPR e AUROC) do que o mesmo procedimento
+aplicado a um MLP com numero de parametros equivalente.
+
+**H0 (nula):** Nenhuma diferenca significativa em AUPR/AUROC entre TTN e
+MLP.
+
+### Operacionalizacao
+
+1. Treinar TTN (hierarquia arbitraria) e MLP (parametros casados) na
+   mesma tarefa de predicao de dinamica usada em H1/H1b.
+2. Para cada par ordenado de genes (i, j), i!=j: pontuacao de aresta =
+   sensibilidade a perturbacao (mesma definicao operacional de H2,
+   aplicada por par de genes em vez de por comunidade).
+3. Ranquear todos os pares por essa pontuacao; calcular AUPR e AUROC
+   contra o gold standard real do DREAM4.
+4. Repetir com 20 seeds, testar diferenca em AUPR/AUROC via Wilcoxon
+   pareado.
+
+### Criterio de sucesso
+
+TTN > MLP em AUPR e AUROC, p<0.05, replicado em pelo menos 3 das redes
+testadas (redes 1 e 2 de tamanho 10, mais rede 1 de tamanho 100, dado o
+custo computacional maior de testar 100 genes x n^2 pares de arestas).
+
+### Status
+
+Pre-registrado, ainda nao implementado.
+
+## 19. Resultado da Fase 3 (H3) - FALSEADO (2026-06-24)
+
+**H3 falhou nas 3 configuracoes pre-registradas.**
+
+| Config | TTN AUPR | MLP AUPR | p(AUPR) | TTN AUROC | MLP AUROC | p(AUROC) |
+|---|---|---|---|---|---|---|
+| 10 genes / rede 1 | 0.254 | 0.242 | 0.261 | 0.539 | 0.600 | 0.016 |
+| 10 genes / rede 2 | 0.192 | 0.189 | 0.648 | 0.401 | 0.471 | 0.0014 |
+| 100 genes / rede 1 | 0.044 | 0.133 | 1.9e-06 | 0.583 | 0.704 | 1.9e-06 |
+
+Em nenhuma configuracao a TTN superou o MLP. Na config de 100 genes, o
+MLP venceu por margem grande e com significancia maxima (p=1.9e-06 nos
+dois testes) - TTN com AUPR 3x pior.
+
+### Interpretacao (nao e uma falha do projeto, e um achado mecanistico)
+
+H3 testava se a estrutura de arvore da TTN, por si so, ajuda a inferir
+topologia mesmo sem conhecer o grafo verdadeiro (usando hierarquia
+arbitraria). O resultado e negativo, e isso e consistente e explicativo
+em relacao a H1/H1b: a vantagem da TTN nessas hipoteses vinha
+especificamente de receber a hierarquia CORRETA (comunidades reais) como
+informacao estrutural previa. Sem essa informacao correta - substituida
+por uma hierarquia arbitraria, portanto incorreta - a TTN nao tem
+vantagem alguma; ao contrario, o vies estrutural errado pode prejudicar
+o aprendizado, enquanto o MLP, sem nenhum vies estrutural imposto, fica
+livre para aprender os padroes diretamente.
+
+**Conclusao de H3:** a vantagem da TTN demonstrada em H1/H1b NAO e uma
+propriedade geral de "arvores tensoriais sao melhores que GNN/MLP" - e
+condicional a correcao da hierarquia fornecida. Isso fortalece a
+interpretacao mecanistica do resultado positivo original, em vez de
+contradize-lo: o que importa e ter a estrutura certa, nao ter uma arvore
+qualquer.
+
+### Status
+
+H3 falseado conforme o criterio pre-registrado. Resultado reportado
+integralmente, sem reinterpretacao pos-hoc do criterio de sucesso.
