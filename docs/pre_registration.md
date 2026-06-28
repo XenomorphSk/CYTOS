@@ -469,3 +469,25 @@ nativamente.
 entropia de emaranhamento rigorosa (requer canonicalizacao completa da
 rede, nao implementada - ver Secao 15). Qualquer escrita sobre este
 resultado deve manter essa distincao explicita.
+
+## 17. Biblioteca CYTOS (pacote cytos) - Generalizacao (2026-06-24)
+
+O codigo de pesquisa foi extraido em uma biblioteca instalavel
+(pip install -e .), dataset-agnostica: cytos.TTNvsGNN aceita qualquer
+grafo (networkx.DiGraph) e trajetorias do usuario, nao apenas DREAM4. O
+DREAM4 passa a ser um carregador de conveniencia opcional
+(cytos.datasets.load_dream4), nao mais a unica forma de uso.
+
+**Validacao:** rodando a biblioteca na mesma config (10 genes/rede 1) ja
+testada no pipeline original, os resultados bateram numericamente
+(hidden_dim=24, bond_dim=2, gnn_params=73, ttn_params=79; H1 e H1b
+passaram com a mesma magnitude de p-value: 1.9e-6 e 2.73e-67).
+
+**Achado honesto ao testar o piloto de entropia (H2) num unico grafo
+pequeno isolado:** com poucas comunidades (~8) e bond_dim baixo
+(resolucao limitada - so 2 valores singulares possiveis), a entropia
+local de bond pode empatar entre comunidades, quebrando a correlacao de
+Spearman (entrada constante). Isso NAO invalida o resultado original de
+H2 (confirmado agregando 51 comunidades de 10 redes diferentes) - e uma
+limitacao esperada de testar em amostra pequena/pouco diversa. Adicionado
+aviso explicito na biblioteca alertando sobre isso quando detectado.
