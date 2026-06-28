@@ -9,7 +9,7 @@
 
 ## Abstract
 
-Gene regulatory networks (GRNs) exhibit modular, hierarchical topology, yet standard graph neural networks (GNNs) treat them as flat graphs and must learn this structure implicitly through message passing. We test whether a Tree Tensor Network (TTN) - a model class originally developed in quantum many-body physics to efficiently represent systems with hierarchical entanglement structure - outperforms a parameter-matched GNN baseline at predicting GRN expression dynamics, when the TTN's hierarchy is fixed by community detection on the regulatory graph rather than learned. Using a pre-registered protocol (hypotheses, success criteria, and statistical thresholds fixed before running on real data), we test both models on the DREAM4 In Silico Networks benchmark across all 5 available networks at two sizes (10 and 100 genes), with model parameter counts matched within ~10%. The TTN outperforms the GNN baseline on parameter efficiency (4-6x lower MSE per parameter) and on capturing long-range correlations between genes in different community modules (TTN: 0.91-0.95 across all configurations; GCN baseline: 0.22-0.62, degrading further as network size increases). The result replicates in 10/10 tested configurations and is robust to baseline strength: repeating the full experiment with a Graph Attention Network (GAT) baseline - which captures substantially more long-range structure than GCN (0.40-0.70) - the TTN still wins in 10/10 configurations. We report this as a pilot-scale, falsification-driven result on a simulated benchmark, not a claim about real biological systems, and document every methodological correction made during development.
+Gene regulatory networks (GRNs) exhibit modular, hierarchical topology, yet standard graph neural networks (GNNs) treat them as flat graphs and must learn this structure implicitly through message passing. We test whether a Tree Tensor Network (TTN) - a model class originally developed in quantum many-body physics to efficiently represent systems with hierarchical entanglement structure - outperforms a parameter-matched GNN baseline at predicting GRN expression dynamics, when the TTN's hierarchy is fixed by community detection on the regulatory graph rather than learned. Using a pre-registered protocol (hypotheses, success criteria, and statistical thresholds fixed before running on real data), we test both models on the DREAM4 In Silico Networks benchmark across all 5 available networks at two sizes (10 and 100 genes), with model parameter counts matched within ~10%. The TTN outperforms the GNN baseline on parameter efficiency (4-6x lower MSE per parameter) and on capturing long-range correlations between genes in different community modules (TTN: 0.91-0.95 across all configurations; GCN baseline: 0.22-0.62, degrading further as network size increases). The result replicates in 10/10 tested configurations and is robust to baseline strength: repeating the full experiment with a Graph Attention Network (GAT) baseline - which captures substantially more long-range structure than GCN (0.40-0.70) - the TTN still wins in 10/10 configurations. As a further test of whether the TTN's tensor-network structure carries information beyond predictive accuracy, we test whether a simplified bond-entropy proxy (derived from the trained TTN's weight structure, not a rigorous von Neumann entanglement entropy) predicts which gene communities are most sensitive to simulated knockout perturbation. This holds robustly across 5 independent random initializations (pooled Spearman rho=0.51, p=1.4e-18; positive in 5/5 seeds individually). We report this as a pilot-scale, falsification-driven result on a simulated benchmark, not a claim about real biological systems, and document every methodological correction made during development.
 
 ---
 
@@ -28,6 +28,8 @@ This is the question this work tests, with a pre-registration protocol adapted f
 **H1b:** The TTN captures correlations between genes in different (hierarchically distant) community modules better than the GNN, when both are matched for parameter count.
 
 **H0 (null):** No statistically significant difference in either metric after controlling for parameter count and seed variance.
+
+**H2 (exploratory extension):** Tree Tensor Networks carry a quantity with no native analog in standard GNNs: a bond structure inspired by entanglement entropy in tensor-network physics. We test whether a simplified proxy of this quantity, computed from the trained TTN's weights, predicts which gene communities are most dynamically sensitive to perturbation - without this relationship being explicitly trained for.
 
 Full operationalization, including exact success criteria fixed before data collection, is available in the project's [pre-registration document](https://github.com/XenomorphSk/CYTOS/blob/main/docs/pre_registration.md).
 
@@ -91,7 +93,31 @@ To rule out the possibility that the result depends on comparing against a weak 
 
 GAT is a substantially stronger baseline than GCN - its attention mechanism captures meaningfully more long-range structure (0.40-0.70, vs. 0.22-0.62 for GCN). However, H1 and H1b are confirmed in 10/10 configurations again: the TTN remains stable at 0.91-0.95 and outperforms GAT in every tested configuration, with the same maximal statistical significance (p=1.9e-6 for H1) observed with the GCN baseline. This indicates the result is not an artifact of comparing against a particularly weak baseline architecture.
 
-## 6. Limitations
+## 6. Exploratory extension: bond entropy predicts perturbation sensitivity
+
+### 6.1 Motivation and caveat
+
+Unlike GNNs, a TTN's structure has a quantity inspired by quantum tensor-network physics: the singular-value structure across any internal "bond" (edge) of the tree. Rigorous von Neumann entanglement entropy requires the network to be in canonical (gauge-fixed, isometric) form - our TTN, trained by gradient descent, is not. We therefore define and use a deliberately labeled simplified proxy, "local bond entropy": for the specific node where a community's aggregated vector joins the rest of the tree, we take the singular value decomposition of that node's weight matrix (reshaped to separate the community side from the rest), normalize squared singular values into probabilities, and compute Shannon entropy. This is not a claim of rigorous entanglement entropy; it is reported as such throughout.
+
+### 6.2 Method
+
+For each of the 10 configurations (5 networks x 2 sizes), we compute, per gene community: (i) local bond entropy as defined above, and (ii) perturbation sensitivity, defined as the mean absolute change in predicted expression for genes outside the community when the community's genes are set to zero (simulated knockout), relative to baseline (unperturbed) prediction. We test the Spearman correlation between these two quantities, pooling across all communities and all configurations, pre-registering the success criterion (rho>0, p<0.05) before running. To test robustness to random initialization, we repeat across 5 independent seeds (0-4), pooling all (entropy, sensitivity) pairs from all seeds and configurations into one aggregate test, with each seed's individual correlation also reported as a secondary, non-gating check.
+
+### 6.3 Results
+
+| Seed | rho | p |
+|---|---|---|
+| 0 | 0.691 | 1.0e-08 |
+| 1 | 0.248 | 0.073 |
+| 2 | 0.498 | 1.5e-04 |
+| 3 | 0.572 | 7.6e-06 |
+| 4 | 0.531 | 4.3e-05 |
+
+**Aggregate (265 community x seed pairs, all configurations): rho=0.505, p=1.4e-18.** The correlation is positive in 5/5 seeds individually (significant at p<0.05 in 4/5). H2 is confirmed under the pre-registered criterion, with the same robustness standard applied to H1/H1b.
+
+This is, to our knowledge, a novel finding: a quantity native to tensor-network structure - absent from standard GNN architectures - predicts a biologically meaningful property (perturbation sensitivity) without being explicitly optimized for it during training (which only targets next-timestep expression prediction).
+
+## 7. Limitations
 
 - **DREAM4 is itself a simulated benchmark** (generated via GeneNetWeaver, parameterized ODEs), not direct experimental measurement. Results should be read as benchmark performance, not a claim about real biological systems.
 - **Small test sets**: one held-out trajectory per network/size, per the pre-registered split.
@@ -99,10 +125,11 @@ GAT is a substantially stronger baseline than GCN - its attention mechanism capt
 - **The original DREAM4 Challenge 2 task (network topology inference) was not addressed** - this work tests dynamics prediction given a known topology, which is a different (and easier) problem.
 - p-values for the secondary metric (H1b) are identical across nearly all configurations, reflecting a ceiling effect of the statistical test given sample size, not a precise measure of effect magnitude.
 - A recurrent baseline (e.g., per-gene LSTM/GRU) has not yet been tested; GCN and GAT were the two baselines evaluated.
+- The "local bond entropy" proxy (Section 6) is not rigorous von Neumann entanglement entropy; computing the latter would require canonicalizing the trained tree into isometric (gauge-fixed) form, which has not been implemented. The reported correlation should be read as evidence that a tensor-network-inspired structural quantity carries signal, not as a claim about quantum entanglement properties of the model.
 
-## 7. Conclusion
+## 8. Conclusion
 
-Under the criteria fixed before observing the data, both H1 and H1b are supported by the DREAM4 benchmark across all 5 available networks and both tested sizes, against two different GNN baselines (GCN and GAT). The most substantive finding - that GNN baselines' ability to capture long-range, cross-community correlation degrades as network size grows while the TTN's does not, and that this gap persists even against a stronger attention-based baseline - is consistent with the theoretical motivation (modular structure becomes more pronounced, not less, as networks grow, and the TTN's fixed hierarchy exploits this directly while flat or attention-based message-passing does not). This is a positive pilot-scale result, not a final claim; the limitations above outline the next steps required before treating it as established.
+Under the criteria fixed before observing the data, both H1 and H1b are supported by the DREAM4 benchmark across all 5 available networks and both tested sizes, against two different GNN baselines (GCN and GAT). The most substantive finding among these - that GNN baselines' ability to capture long-range, cross-community correlation degrades as network size grows while the TTN's does not - is consistent with the theoretical motivation. Beyond this, the exploratory extension (H2) shows that a quantity inspired by tensor-network entanglement structure, absent from standard GNNs, predicts gene community perturbation sensitivity, robustly across 5 independent initializations. This connects the predictive comparison (H1/H1b) to a structural property unique to the tensor-network formulation, suggesting TTNs may offer interpretability advantages beyond raw predictive performance. This is a positive pilot-scale result, not a final claim; the limitations above outline the next steps required before treating it as established.
 
 ## Reproducibility
 
