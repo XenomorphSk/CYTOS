@@ -815,3 +815,53 @@ Nenhum. Os resultados do DREAM4 permanecem validos dentro do escopo
 em que foram testados (benchmark simulado, 10-100 genes). A Fase I
 nao falseia esses resultados -- apenas mostra que a transferencia
 para dados reais de maior escala requer trabalho adicional.
+
+## 26. Conclusao da Fase I: Limitacao Estrutural Identificada (2026-06-29)
+
+### Diagnostico apos DREAM5 E. coli
+
+Testado DREAM5 Network 3 (E. coli), 1081 genes com interacoes confirmadas,
+805 condicoes experimentais. Analise de escala revelou:
+
+| n genes | TTN params | GNN params | Diff | N comunidades | Media genes/comun |
+|---|---|---|---|---|---|
+| 50 | 399 | 769 | 48% | 49 | 1.0 |
+| 100 | 799 | 769 | 4% | 89 | 1.1 |
+| 150 | 1199 | 769 | 56% | 126 | 1.2 |
+| 200 | 1599 | 769 | 108% | 163 | 1.2 |
+
+O Louvain detecta quase uma comunidade por gene (media ~1.1) porque a
+rede e extremamente esparsa localmente - 2.066 arestas em 1.081 genes
+= ~1.9 arestas/gene. Isso nao e artefato do subconjunto escolhido: e
+uma propriedade real da rede regulatoria de E. coli (procarioto, menos
+modular que eucariotos no nivel transcricional).
+
+### Conclusao da Fase I
+
+A Fase I com dados biologicos reais esta sistematicamente limitada por
+dois fatores estruturais relacionados:
+
+1. **Limite de escala do casamento de parametros:** a janela onde TTN e
+   GNN tem parametros comparaveis e estreita (~n=100) e dependente de
+   n_genes de forma linear.
+
+2. **Ausencia de estrutura modular densa em redes biologicas reais:**
+   redes de interacao reais (PPI de levedura via STRING, GRN de E. coli
+   via gold standard DREAM5) sao muito mais esparsas e menos modulares
+   que os benchmarks simulados do DREAM4, que foram gerados
+   especificamente com estrutura modular forte (GeneNetWeaver).
+
+### O que isso significa
+
+Nao e uma falha do projeto ou falsificacao de H1/H1b: esses resultados
+permanecem validos no regime onde foram testados (benchmark simulado,
+10-100 genes, redes moderadamente modulares). O que a Fase I revela e
+que a **transferencia para dados reais** exige ou (a) encontrar redes
+biologicas reais com estrutura modular mais forte (ex: redes metabolicas
+vs regulatorias), ou (b) adaptar a arquitetura TTN para o regime de redes
+esparsas (ex: hierarquia aprendida em vez de detectada por Louvain, ou
+bond_dim escalonavel com n_genes), ou (c) comparar com baselines mais
+fortes em escala maior.
+
+Fase I declarada INCONCLUSIVA por limitacao estrutural sistematica,
+nao como evidencia contra o metodo no regime onde foi validado.
