@@ -660,3 +660,41 @@ do que o proxy simplificado sugeria.
 Confirmado com o mesmo rigor estatistico de H1/H1b, agora tambem com a
 metrica de entropia matematicamente correta (dentro do escopo
 documentado na Secao 20).
+
+## 22. Pre-Registro - Fase I: Validacao em Interactome Real (S. cerevisiae) (2026-06-24)
+
+### Motivacao
+
+H1/H1b/H2/H3 foram testados exclusivamente no DREAM4, um benchmark
+SIMULADO. Esta fase testa o mesmo protocolo num interactome REAL:
+topologia STRING (nao simulada) + expressao temporal real (Spellman et
+al. 1998, ciclo celular de levedura, 18 timepoints a cada 7 minutos).
+
+### Dados confirmados até este ponto
+
+- **Rede:** STRING v12.0, S. cerevisiae (especie 4932) - 4712 genes,
+  106352 arestas (confianca >=900) antes de qualquer intersecao.
+- **Expressao temporal:** Spellman et al. (1998), Mol Biol Cell 9(12),
+  18 timepoints, ~256-800 genes ciclo-regulados - busca em andamento.
+
+### Decisoes de design pre-registradas (antes de ver o resultado)
+
+1. **Alinhamento de genes:** rede final = intersecao STRING x genes com
+   expressao completa (sem NaN), via align_graph_and_expression_genes.
+   Tamanho da intersecao nao conhecido a priori, sera reportado, nao
+   ajustado retroativamente.
+2. **Confianca do STRING:** mantido limiar 900, decidido ANTES de ver o
+   tamanho da intersecao final.
+3. **Split de trajetorias:** Spellman e UMA serie temporal longa (18
+   pontos), sem replicas multiplas. Decisao: dividir em segmentos
+   contiguos nao-sobrepostos (60%/20%/20%) como pseudo-trajetorias -
+   menos rigoroso que split por replica genuina do DREAM4, documentado
+   como limitacao explicita.
+4. **Hipoteses testadas:** repetir H1 e H1b nesta rede real unica (sem
+   replicacao entre redes como no DREAM4), n=20 seeds como unica fonte
+   de robustez estatistica.
+
+### Status
+
+Aguardando dataset de expressao para completar o alinhamento e rodar o
+protocolo.
