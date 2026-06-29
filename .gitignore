@@ -20,3 +20,9 @@ experiment_log*.txt
 # Sistema
 .DS_Store
 *.swp
+
+# Dados do STRING database (terceiros, nao redistribuir)
+*.protein.links.*.txt
+*.protein.links.*.txt.gz
+*.protein.info.*.txt
+*.protein.info.*.txt.gz
