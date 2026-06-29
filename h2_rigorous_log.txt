@@ -1,0 +1,16 @@
+Config 10/1 processada (15 pares acumulados)
+Config 10/2 processada (25 pares acumulados)
+Config 10/3 processada (40 pares acumulados)
+Config 10/4 processada (55 pares acumulados)
+Config 10/5 processada (70 pares acumulados)
+Config 100/1 processada (110 pares acumulados)
+Config 100/2 processada (135 pares acumulados)
+Config 100/3 processada (180 pares acumulados)
+Config 100/4 processada (220 pares acumulados)
+Config 100/5 processada (265 pares acumulados)
+
+=== H2 com entropia RIGOROSA ===
+N pares: 265
+N pulados (falha na canonicalizacao): 0
+Spearman rho=0.6642, p=4.3715e-35
+H2-rigoroso: PASSOU

@@ -634,3 +634,29 @@ casos.
 Repetir o teste de H2 usando a entropia RIGOROSA em vez do proxy, com
 multiplas seeds, para verificar se a correlacao original (rho=0.51,
 p=1.4e-18 com o proxy) se mantem com a metrica mais rigorosa.
+
+## 21. H2 Revalidado com Entropia Rigorosa (2026-06-24)
+
+Repetido o teste de H2 usando a entropia de von Neumann RIGOROSA
+(canonicalizacao via QR, Secao 20) em vez do proxy simplificado. Todas
+as 10 configuracoes (5 redes x 2 tamanhos), 5 seeds cada, bond_dim=3
+fixo.
+
+**Resultado: H2 confirmado, e mais forte que com o proxy.**
+
+| Metrica | Proxy (Secao 16) | Rigorosa (esta secao) |
+|---|---|---|
+| rho (Spearman) | 0.505 | 0.664 |
+| p-value | 1.4e-18 | 4.4e-35 |
+| N pares | 265 | 265 |
+| Falhas de canonicalizacao | - | 0/265 |
+
+A versao rigorosa nao apenas confirma o achado original - mostra uma
+relacao mais forte entre entropia de bond e sensibilidade a perturbacao
+do que o proxy simplificado sugeria.
+
+### Status final de H2
+
+Confirmado com o mesmo rigor estatistico de H1/H1b, agora tambem com a
+metrica de entropia matematicamente correta (dentro do escopo
+documentado na Secao 20).
