@@ -743,3 +743,38 @@ genes de comunidades diferentes) do que GNN, em pelo menos 15/20 seeds.
 Se H1-real e H1b-real passarem, elimina a principal ressalva do paper
 ("resultado so em benchmark simulado"). Se falharem, ainda e um resultado
 informativo sobre os limites de transferencia do metodo.
+
+## 24. Emenda - Fase I: Threshold STRING reduzido para 700 (2026-06-29)
+
+### Motivacao (descoberta ANTES de ver qualquer resultado com threshold=700)
+
+O experimento com threshold=900 (Secao 23) revelou um problema estrutural:
+a rede resultante (445 nodes, 1470 arestas, densidade media ~6.6 arestas
+por gene) foi tao esparsa que o Louvain detectou 164 comunidades com media
+de 2.7 genes — fragmentacao extrema que torna a hierarquia da TTN quase
+equivalente a uma hierarquia arbitraria (o mesmo regimem que falhou em H3).
+
+Adicionalmente, o casamento de parametros falhou completamente (TTN 3607
+params vs GNN 769, diferenca de 369%) tornando H1 invalido pela nossa
+propria definicao.
+
+### Emenda pre-registrada (escrita ANTES de rodar com threshold=700)
+
+Repetir o experimento da Fase I com threshold=700 (confianca "alta" per
+documentacao oficial do STRING, valor padrao recomendado). Isso e uma
+decisao metodologicamente defensavel (700 e o padrao do STRING, nao um
+valor escolhido pra "consertar" o resultado), decidida ANTES de ver
+qualquer dado com esse threshold.
+
+**Criterio de sucesso pre-registrado (igual a Secao 23):**
+- H1-real: TTN supera GNN em MSE/param, p<0.05, casamento de parametros
+  dentro de 10% (se o casamento falhar novamente com threshold=700,
+  declaramos Fase I inconclusiva por limitacao de escala, nao como
+  evidencia contra o metodo).
+- H1b-real: TTN supera GNN em correlacao de longo alcance, p<0.05.
+
+**Criterio de parada se threshold=700 tambem fragmentar demais:**
+Se o Louvain ainda detectar >50 comunidades com media <5 genes, a
+conclusao sera que a rede STRING nessa escala de genes ciclo-regulados
+nao tem estrutura modular suficiente pra dar hierarquia util a TTN,
+e a Fase I sera declarada inconclusiva (nao falseada, inconclusiva).
