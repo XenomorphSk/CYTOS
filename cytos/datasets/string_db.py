@@ -27,6 +27,38 @@ def load_string_id_mapping(info_path: str) -> dict:
     return dict(zip(df[id_col], df[name_col]))
 
 
+def load_alias_to_preferred_name(info_path: str, aliases_path: str) -> dict:
+    """
+    Mapeamento ALIAS -> NOME PADRAO (preferred_name), via
+    {species}.protein.aliases.v12.0.txt. Recupera matches perdidos
+    quando a fonte de expressao usa nome sistemático de ORF (ex:
+    YAL001C) em vez do nome padrao da SGD (ex: TFC3).
+    """
+    id_to_name = load_string_id_mapping(info_path)
+
+    aliases_df = pd.read_csv(aliases_path, sep="\t")
+    id_col = "#string_protein_id" if "#string_protein_id" in aliases_df.columns else aliases_df.columns[0]
+    alias_col = "alias" if "alias" in aliases_df.columns else aliases_df.columns[1]
+
+    alias_to_name = {}
+    for _, row in aliases_df.iterrows():
+        protein_id, alias = row[id_col], row[alias_col]
+        preferred = id_to_name.get(protein_id)
+        if preferred is None:
+            continue
+        if alias not in alias_to_name:
+            alias_to_name[alias] = preferred
+
+    for protein_id, name in id_to_name.items():
+        alias_to_name.setdefault(name, name)
+
+    return alias_to_name
+
+
+def rename_genes_via_aliases(gene_names: list, alias_to_name: dict) -> list:
+    return [alias_to_name.get(g, g) for g in gene_names]
+
+
 def load_string_network(links_path, info_path, confidence_threshold=700, gene_whitelist=None):
     id_to_symbol = load_string_id_mapping(info_path)
 

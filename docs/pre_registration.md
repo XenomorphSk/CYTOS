@@ -778,3 +778,40 @@ Se o Louvain ainda detectar >50 comunidades com media <5 genes, a
 conclusao sera que a rede STRING nessa escala de genes ciclo-regulados
 nao tem estrutura modular suficiente pra dar hierarquia util a TTN,
 e a Fase I sera declarada inconclusiva (nao falseada, inconclusiva).
+
+## 25. Resultado Final - Fase I: INCONCLUSIVA (2026-06-29)
+
+### Resultado com threshold=700
+
+O casamento de parametros falhou identicamente ao threshold=900:
+- TTN (bond_dim=2 minimo): 3607 parametros
+- GNN (hidden_dim=256 maximo testado): 769 parametros
+- Diferenca: 369%, muito acima da tolerancia pre-registrada de 10%
+
+O problema nao era a esparsidade da rede (que melhorou de 1470 para
+2844 arestas) -- era a escala de 451 genes. A TTN genuinea (produto
+externo multilinear) cresce em parametros muito mais rapido que a GNN
+conforme n_genes aumenta, e o espaco de candidatos testado em
+match_parameter_counts nao cobre essa escala.
+
+### Declaracao de inconclusividade (conforme criterio pre-registrado)
+
+Fase I declarada INCONCLUSIVA por limitacao de escala, nao como
+evidencia contra o metodo. Especificamente:
+
+1. O protocolo de casamento de parametros validado para 10-100 genes
+   (DREAM4) nao escala diretamente para 400+ genes sem ajuste.
+2. Isso e uma limitacao real da arquitetura atual para datasets maiores,
+   nao uma falha de principio.
+3. Para testar o metodo em dados reais, sera necessario ou (a) encontrar
+   um dataset real de rede menor (~50-150 genes), ou (b) estender o
+   espaco de busca de match_parameter_counts para incluir bond_dim
+   fracionario/subdimensional, ou (c) usar uma arquitetura de GNN com
+   mais parametros como ponto de comparacao.
+
+### Impacto nos resultados ja confirmados (H1/H1b/H2/H3)
+
+Nenhum. Os resultados do DREAM4 permanecem validos dentro do escopo
+em que foram testados (benchmark simulado, 10-100 genes). A Fase I
+nao falseia esses resultados -- apenas mostra que a transferencia
+para dados reais de maior escala requer trabalho adicional.

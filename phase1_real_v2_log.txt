@@ -1,0 +1,7 @@
+Subgrafo: 445 nodes, 2844 edges
+AVISO: nao foi possivel casar parametros dentro da tolerancia (369.05% > 10.00%). Melhor par: hidden_dim=256 (GNN, 769 params), bond_dim=2 (TTN, 3607 params).
+Parametros: GNN=769 (hidden=256), TTN=3607 (bond=2), diff=369.1%
+
+AVISO: casamento de parametros falhou (369.1% > 10%).
+Conforme criterio pre-registrado (Secao 24): Fase I declarada INCONCLUSIVA
+por limitacao de escala, nao como evidencia contra o metodo.

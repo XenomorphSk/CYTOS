@@ -1,0 +1,17 @@
+Expressao: (18, 451) (timepoints x genes)
+Genes: 451, primeiros: ['CLN3', 'SWD1', 'RFA1', 'PHO11', 'HTB2']
+
+Pares de treino: 10, val: 3, teste: 3
+Subgrafo: 445 nodes, 1470 edges
+AVISO: nao foi possivel casar parametros dentro da tolerancia (369.05% > 10.00%). Melhor par: hidden_dim=256 (GNN, 769 params), bond_dim=2 (TTN, 3607 params).
+
+Parametros: GNN=769 (hidden_dim=256), TTN=3607 (bond_dim=2)
+
+Rodando 20 seeds em paralelo (8 workers)...
+[#-----------------------------] 1/20 seeds | 54.8s | ETA 1041.1s   [###---------------------------] 2/20 seeds | 56.0s | ETA 504.0s   [####--------------------------] 3/20 seeds | 56.8s | ETA 321.6s   [######------------------------] 4/20 seeds | 57.1s | ETA 228.4s   [#######-----------------------] 5/20 seeds | 57.3s | ETA 171.8s   [#########---------------------] 6/20 seeds | 57.5s | ETA 134.2s   [##########--------------------] 7/20 seeds | 58.6s | ETA 108.8s   [############------------------] 8/20 seeds | 58.9s | ETA 88.4s   [#############-----------------] 9/20 seeds | 86.3s | ETA 105.5s   [###############---------------] 10/20 seeds | 105.7s | ETA 105.7s   [################--------------] 11/20 seeds | 105.7s | ETA 86.5s   [##################------------] 12/20 seeds | 105.9s | ETA 70.6s   [###################-----------] 13/20 seeds | 106.2s | ETA 57.2s   [#####################---------] 14/20 seeds | 110.5s | ETA 47.3s   [######################--------] 15/20 seeds | 110.9s | ETA 37.0s   [########################------] 16/20 seeds | 111.3s | ETA 27.8s   [#########################-----] 17/20 seeds | 123.7s | ETA 21.8s   [###########################---] 18/20 seeds | 131.3s | ETA 14.6s   [############################--] 19/20 seeds | 131.7s | ETA 6.9s   [##############################] 20/20 seeds | 132.2s | ETA 0.0s   
+
+=== Resultado Fase I (dados reais) ===
+TTN MSE/param: 4.137e-05 | GNN MSE/param: 1.500e-04
+H1-real: PASSOU (p=1.907e-06)
+TTN long-range: 0.2372 | GNN long-range: 0.3974
+H1b-real: FALHOU (p=2.068e-09)
