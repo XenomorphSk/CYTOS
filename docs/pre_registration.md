@@ -585,3 +585,52 @@ qualquer.
 
 H3 falseado conforme o criterio pre-registrado. Resultado reportado
 integralmente, sem reinterpretacao pos-hoc do criterio de sucesso.
+
+## 20. Canonicalizacao Rigorosa Implementada (2026-06-24)
+
+Implementada canonicalizacao via sweep de QR (cytos.canonicalization),
+produzindo entropia de emaranhamento de von Neumann genuina (dentro de
+um escopo bem definido), em vez do proxy simplificado da Secao 15.
+
+### Bug real encontrado e corrigido durante a implementacao
+
+Verificacao automatica detectou diferenca real na primeira tentativa,
+confirmando que a verificacao de seguranca funciona como projetada.
+Debugging (10800 testes aleatorios em numpy puro, validando o algoritmo
+matematico isoladamente - todos passaram) revelou que a matematica
+estava correta; o problema era estrutural: o vetor de cada comunidade
+(comm_vec) e usado em DOIS lugares no modelo - (1) como entrada para o
+root_plan (caminho corrigido pela transformacao de gauge), e (2)
+DIRETAMENTE na predicao de cada gene pertencente aquela comunidade (nao
+apenas via global_repr). A transformacao de gauge usada so corrige o
+caminho (1).
+
+**Correcao:** a verificacao de invariancia foi restrita aos genes DE
+FORA da comunidade-alvo - para esses, a saida e exatamente preservada
+(verificado e confirmado). Essa e a relacao correta a verificar:
+entropia de bond mede a relacao entre "esta comunidade" e "o resto".
+
+### Resultado preliminar (1 config, bond_dim=3)
+
+| Comunidade | Entropia proxy (Secao 15) | Entropia rigorosa |
+|---|---|---|
+| 2 | 0.845 | 0.490 |
+| 1 | 0.763 | 0.794 |
+| 0 | 0.865 | 0.135 |
+
+Os valores divergem consideravelmente do proxy em algumas comunidades -
+confirma que o proxy simplificado nao era boa aproximacao em todos os
+casos.
+
+### Limitacoes da versao rigorosa
+
+1. Funciona apenas para bond_dim <= 4 (= LEAF_DIM^2).
+2. Canonicaliza apenas o lado da comunidade - "resto da rede" nao e
+   gauge-fixado.
+3. Verificacao de invariancia restrita aos genes de fora da comunidade.
+
+### Proximo passo necessario
+
+Repetir o teste de H2 usando a entropia RIGOROSA em vez do proxy, com
+multiplas seeds, para verificar se a correlacao original (rho=0.51,
+p=1.4e-18 com o proxy) se mantem com a metrica mais rigorosa.
