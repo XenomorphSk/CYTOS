@@ -698,3 +698,48 @@ al. 1998, ciclo celular de levedura, 18 timepoints a cada 7 minutos).
 
 Aguardando dataset de expressao para completar o alinhamento e rodar o
 protocolo.
+
+## 23. Pre-Registro Atualizado - Fase I: Dados Finais Confirmados (2026-06-29)
+
+### Dataset final (decidido ANTES de rodar qualquer experimento)
+
+- **Expressao:** Spellman et al. (1998), experimento alpha-factor,
+  subconjunto `orf800` (genes ciclo-regulados confirmados pelo proprio
+  Spellman, nao escolhidos por nos), filtrado para genes com dados
+  completos (sem NaN). De 800 ORFs originais, 613 tinham dados completos.
+
+- **Rede:** STRING v12.0 (S. cerevisiae, especie 4932), threshold de
+  confianca 900 (decidido na Secao 22, antes de ver a intersecao),
+  com mapeamento via arquivo de aliases (ORF sistematico -> nome padrao
+  SGD). Intersecao final com os 613 genes ciclo-regulados com expressao:
+  **451 genes, 1.470 arestas** no subgrafo.
+
+- **Split de trajetorias:** uma unica serie temporal de 18 timepoints.
+  Divisao contígua: timepoints 0-10 (indices 0-10) = treino, 11-14 =
+  validacao, 15-17 = teste. Decisao tomada ANTES de ver resultados.
+  Limitacao reconhecida: pseudo-trajetorias de uma serie unica sao
+  menos rigorosas que replicas biologicas genuinas (como no DREAM4).
+
+- **Baseline:** GCN com parametros casados (mesmo protocolo de H1/H1b).
+
+### Hipoteses (H1-real e H1b-real)
+
+**H1-real:** TTN (hierarquia por Louvain, fixada antes do treino) supera
+GNN parametro-casado em eficiencia parametrica (MSE/param menor) no
+conjunto de teste, em pelo menos 15/20 seeds (mesmo criterio de H1).
+
+**H1b-real:** TTN captura melhor correlacoes de longo alcance (entre
+genes de comunidades diferentes) do que GNN, em pelo menos 15/20 seeds.
+
+**Criterio de sucesso:** ambos com p<0.05 (Wilcoxon pareado, n=20 seeds).
+
+### O que torna este teste diferente e mais dificil que o DREAM4
+
+1. Dados reais de microarray (ruido de medicao genuino, nao GeneNetWeaver)
+2. Rede de interacao proteina-proteina real (STRING), nao rede simulada
+3. Split temporal forçado (sem replicas biologicas multiplas)
+4. Escala nova (451 genes - maior que qualquer config testada ate agora)
+
+Se H1-real e H1b-real passarem, elimina a principal ressalva do paper
+("resultado so em benchmark simulado"). Se falharem, ainda e um resultado
+informativo sobre os limites de transferencia do metodo.
