@@ -1,6 +1,6 @@
 # Tree Tensor Networks Outperform Parameter-Matched Graph Neural Networks on Gene Regulatory Network Dynamics: A Pre-Registered Falsification Study
 
-**Author:** GB
+**Author:** Gabriel Skura Ribeiro
 **Affiliation:** Independent researcher
 **Date:** June 2026
 **Code & pre-registration:** https://github.com/XenomorphSk/CYTOS
