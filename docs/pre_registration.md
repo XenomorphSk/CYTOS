@@ -1054,3 +1054,17 @@ H0: Sem diferenca significativa, ou hierarquia KEGG nao supera Louvain.
 ### Status
 
 Pre-registrado. Aguardando dados.
+
+### Emenda (2026-06-30): restricao aos genes com pathway conhecido
+
+Apos obter os dados, verificou-se que apenas 223/451 genes (49%) tem
+pelo menos um pathway anotado no KEGG; os demais 228 cairiam todos numa
+unica comunidade "sem_pathway" gigante, distorcendo a estrutura da TTN
+de forma nao relacionada a hipotese de interesse.
+
+Decisao (fixada ANTES de rodar o treino, depois de ver apenas a
+distribuicao de membership, nao o resultado de H5): restringir o
+experimento aos 223 genes com pelo menos um pathway conhecido. O grafo
+STRING e os dados de expressao sao igualmente restritos a esse
+subconjunto antes de qualquer treino. Isso e uma amostra menor e
+diferente da Fase I original (223 vs 451 genes) - reportado como tal.
