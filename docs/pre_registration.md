@@ -1023,3 +1023,34 @@ Confirma o pre-requisito tecnico mais simples da Fase II: a vantagem de
 1 passo se transfere para uso em cadeia, sem retreino especifico, de
 forma robusta atraves de multiplas topologias. Nao confirma ainda nada
 sobre dinamica de sistemas reais, atratores ou bifurcacoes.
+
+## 31. Pre-Registro - Hierarquia Biologica via KEGG Pathways (2026-06-30)
+
+### Motivacao
+
+A Fase I usou Louvain (estatistico) para a hierarquia da TTN, resultando
+em fragmentacao excessiva (81 comunidades, media 5.5 genes, em 445
+genes). Esta secao testa hierarquia definida por conhecimento biologico
+real (KEGG pathways) em vez de clustering estatistico.
+
+### Decisao de design (fixada ANTES de buscar os dados)
+
+1. Fonte: KEGG REST API, mapeamento gene -> pathway para S. cerevisiae.
+2. Regra de desambiguacao para membership multiplo: cada gene e
+   atribuido ao seu PRIMEIRO pathway listado na resposta da API (ordem
+   deterministica, nao escolhida com base no resultado).
+3. Genes sem pathway no KEGG: agrupados em comunidade "sem_pathway".
+4. Mesmo criterio de H1/H1b: TTN supera GNN parametro-casada (p<0.05)
+   na mesma config de 451 genes (STRING + Spellman).
+
+### Hipotese (H5)
+
+H5: TTN com hierarquia biologica (KEGG) supera TTN com hierarquia
+estatistica (Louvain) E supera GNN parametro-casada, na mesma config
+onde a Fase I (Louvain) foi inconclusiva.
+
+H0: Sem diferenca significativa, ou hierarquia KEGG nao supera Louvain.
+
+### Status
+
+Pre-registrado. Aguardando dados.
