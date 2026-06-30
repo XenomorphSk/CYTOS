@@ -1278,3 +1278,42 @@ em resultado de H7.
 
 Decisao: usar linkage='ward' em vez de 'average', fixado antes de
 rodar o experimento.
+
+## 36. Resultado H7: FALSEADO - Terceira Fonte de Hierarquia Falha (2026-06-30)
+
+### Resultado
+
+| Metrica | TTN (correlacao c/ lag) | GNN | p | Resultado |
+|---|---|---|---|---|
+| MSE/param (H1) | 4.15e-5 | 3.09e-5 | 9.5e-6 | FALHOU (GNN venceu) |
+| Long-range corr (H1b) | 0.249 | 0.383 | 6.9e-4 | FALHOU (GNN venceu) |
+
+H7 falseado, GNN vencendo novamente com significancia forte - mesma
+direcao e magnitude similar a H5.
+
+### Reavaliacao honesta da conclusao da Secao 34
+
+A hipotese motivada por H6 era que hierarquia DINAMICA resolveria o
+problema. Isso NAO se confirmou: correlacao com lag temporal falhou
+exatamente como Louvain e KEGG. Isso enfraquece a conclusao especifica
+da Secao 34. Tres fontes de hierarquia genuinamente diferentes falham
+de forma consistente no mesmo dataset real, enquanto o sintetico de H6
+mostrou a TTN vencendo sob condicoes adversas equivalentes.
+
+### O que isso sugere agora (honestamente incerto)
+
+A diferenca mais saliente entre o sintetico (positivo) e os tres reais
+(negativos) nao e mais claramente "fonte da hierarquia". Candidatas nao
+testadas: (1) serie real e UNICA trajetoria em segmentos contiguos, vs
+multiplas trajetorias independentes no sintetico/DREAM4; (2) dinamica
+real pode nao ter estrutura modular linear recuperavel como a
+construida no sintetico; (3) propriedades distribucionais de microarray
+real diferentes do ruido gaussiano aditivo do sintetico.
+
+### Status atualizado
+
+Com H5, KEGG, e H7 todos negativos, e apenas H6 (sintetico) positivo, o
+gap entre benchmark simulado/sintetico e este dataset real permanece
+GENUINAMENTE NAO RESOLVIDO apos tres tentativas independentes de
+hierarquia. A "direcao concreta" proposta na Secao 9 do preprint foi
+testada e tambem falhou - precisa reframing honesto.
