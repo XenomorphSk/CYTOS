@@ -1359,3 +1359,33 @@ vencer (ou perder) em trajetoria unica, mesma hierarquia/ruido/amostra.
 ### Status
 
 Pre-registrado, ainda nao implementado.
+
+## 38. Resultado H8: NAO CONFIRMADO - Estrutura de Trajetoria Eliminada (2026-06-30)
+
+### Resultado
+
+| Condicao | TTN MSE/param | GNN MSE/param | p | TTN venceu? |
+|---|---|---|---|---|
+| Multiplas trajetorias (replica H6/DREAM4) | 7.68e-5 | 5.44e-4 | 1.9e-6 | SIM |
+| Trajetoria unica contigua (replica Spellman) | 2.57e-3 | 2.97e-3 | 1.9e-6 | SIM |
+
+A TTN venceu em AMBAS as condicoes, mesma significancia maxima. H8 NAO
+confirmado: estrutura de trajetoria nao e a causa do gap em dados
+reais, quando a hierarquia e verdadeira por construcao.
+
+### Estado atual da eliminacao sistematica
+
+Das tres hipoteses candidatas apos H7:
+1. Ruido de medicao e/ou tamanho de amostra - ELIMINADA por H6
+2. Estrutura de trajetoria (unica vs multipla) - ELIMINADA por H8
+3. Dinamica real do ciclo celular pode nao ter estrutura modular linear
+   recuperavel - NAO TESTADA, mais dificil de isolar.
+
+### Interpretacao
+
+Com duas das tres hipoteses eliminadas sistematicamente, a evidencia
+converge para a hipotese 3: a limitacao pode ser sobre a NATUREZA da
+dinamica biologica real (nao-linear, com realimentacao complexa, ou
+genuinamente sem particao modular fixa recuperavel), nao sobre o
+protocolo experimental. Hipotese mais provavel, nao conclusao
+estabelecida - testar rigorosamente exigiria ferramentas adicionais.

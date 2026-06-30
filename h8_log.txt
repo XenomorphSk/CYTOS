@@ -1,0 +1,10 @@
+=== Condicao: MULTIPLAS trajetorias independentes (replica H6/DREAM4) ===
+TTN=7.6823e-05, GNN=5.4368e-04, p=1.9073e-06, tempo=621.5s
+
+=== Condicao: TRAJETORIA UNICA contigua (replica Spellman/H5/H7) ===
+TTN=2.5701e-03, GNN=2.9707e-03, p=1.9073e-06, tempo=1282.0s
+
+=== Resultado H8 ===
+Multiplas trajetorias: TTN venceu
+Trajetoria unica: TTN venceu
+H8 NAO confirmado (estrutura de trajetoria explica o gap: False)
