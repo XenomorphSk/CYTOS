@@ -30,7 +30,10 @@ from cytos.ttn_model import TTNModel, train_ttn
 
 
 def match_parameter_counts(hierarchy, gene_names, num_nodes, gnn_architecture="GCN", gnn_num_layers=2, tolerance=0.10):
-    hidden_dim_candidates = [2, 4, 8, 16, 24, 32, 48, 64, 96, 128, 144, 160, 176, 192, 224, 256]
+    hidden_dim_candidates = [
+        2, 4, 8, 16, 24, 32, 48, 64, 96, 128, 144, 160, 176, 192, 224, 256,
+        320, 384, 448, 512, 640, 768, 896, 1024, 1280, 1536, 2048, 2560, 3072, 4096,
+    ]
     bond_dim_candidates = list(range(2, 65))
 
     best = None

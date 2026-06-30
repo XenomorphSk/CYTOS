@@ -1068,3 +1068,40 @@ experimento aos 223 genes com pelo menos um pathway conhecido. O grafo
 STRING e os dados de expressao sao igualmente restritos a esse
 subconjunto antes de qualquer treino. Isso e uma amostra menor e
 diferente da Fase I original (223 vs 451 genes) - reportado como tal.
+
+## 32. Resultado H5: FALSEADO - Hierarquia Biologica Nao Resolve o Problema (2026-06-30)
+
+### Resultado
+
+| Metrica | TTN (KEGG) | GNN | p | Resultado |
+|---|---|---|---|---|
+| MSE/param (H1) | 8.29e-5 | 6.08e-5 | 3.8e-6 | FALHOU (GNN venceu) |
+| Long-range corr (H1b) | 0.207 | 0.345 | 5.5e-5 | FALHOU (GNN venceu) |
+
+H5 falseado com significancia forte, na direcao OPOSTA a hipotese de
+trabalho. A GNN supera a TTN nas duas metricas.
+
+### Interpretacao
+
+A hipotese de H5 era que o problema da Fase I fosse a escolha do metodo
+de clustering (Louvain). Trocando para hierarquia biologicamente
+motivada (KEGG pathways), isso NAO recuperou a vantagem da TTN. A causa
+da falha da Fase I nao e, portanto, o metodo de deteccao de comunidade -
+e algo mais fundamental sobre a diferenca entre o regime DREAM4
+(benchmark simulado com estrutura modular forte) e dados reais.
+
+### Hipoteses para a causa real (nao testadas aqui)
+
+1. Tamanho de amostra: 10 pares de treino e muito menor que o DREAM4.
+2. Ruido de medicao real (microarray) nao simulado pelo GeneNetWeaver.
+3. Pseudo-trajetoria unica (split temporal) estruturalmente diferente
+   do split por replica genuina do DREAM4.
+
+### Status final da linha de investigacao "dados reais"
+
+Com H5 tambem falseado, a conclusao honesta e que a vantagem da TTN
+demonstrada em H1/H1b/H2/H4b e, até este ponto, ESPECIFICA ao regime do
+benchmark simulado DREAM4. A extensao para dados reais nesta escala e
+formato nao foi alcancada, apesar de duas tentativas independentes de
+hierarquia (Louvain e KEGG). Reportado como limitacao central, nao
+escondido ou minimizado.
