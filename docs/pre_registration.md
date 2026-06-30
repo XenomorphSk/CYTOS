@@ -1229,3 +1229,40 @@ hierarquia que reflita ACOPLAMENTO DINAMICO real, nao apenas qualquer
 estrutura biologica relacionada. Abre direcao de pesquisa concreta: como
 inferir/aproximar acoplamento dinamico real a partir de dados
 disponiveis, antes de tentar de novo em dados biologicos reais.
+
+## 35. Pre-Registro - H7: Hierarquia via Correlacao com Lag Temporal (2026-06-30)
+
+### Motivacao
+
+H6 sugere que a causa da falha em dados reais e que nem topologia
+estatica (STRING/Louvain) nem anotacao funcional estatica (KEGG)
+capturam necessariamente a estrutura de acoplamento DINAMICO real. Este
+experimento testa hierarquia derivada diretamente da dinamica
+observada.
+
+### Decisao de design: correlacao com lag, nao Granger completo
+
+Granger causality rigoroso exige amostras muito maiores que os ~17
+pares de transicao disponiveis. Decisao (ANTES de testar): usar matriz
+de correlacao com lag-1: C[i,j] = correlacao de Pearson entre x_i(t) e
+x_j(t+1), sobre TODOS os pares disponiveis (treino+val+teste juntos,
+ja que aqui construimos a HIERARQUIA, nao treinamos o modelo).
+Clustering hierarquico aglomerativo (distancia = 1-|C[i,j]|) gera a
+particao, numero de clusters escolhido para media de ~10-20 genes por
+comunidade (decisao de engenharia, nao ajustada por resultado).
+
+### Hipotese (H7)
+
+H7: TTN com hierarquia de correlacao com lag supera GNN parametro-
+casada na mesma config onde H5 (Louvain e KEGG) falhou.
+
+H0: Sem diferenca, ou GNN continua superando a TTN.
+
+### Criterio de sucesso
+
+TTN > GNN (p<0.05, n=20 seeds) em MSE/parametro e correlacao de longo
+alcance.
+
+### Status
+
+Pre-registrado, ainda nao implementado.
