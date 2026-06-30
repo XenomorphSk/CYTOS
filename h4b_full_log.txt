@@ -1,0 +1,48 @@
+
+=== 10 genes / rede 1 [CONFIRMATORIO] ===
+TTN=8.1643e-02, GNN=7.6981e-02, p=3.2998e-01, FALHOU
+Tempo decorrido: 27.9s
+
+=== 10 genes / rede 2 [CONFIRMATORIO] ===
+TTN=7.6572e-02, GNN=8.1121e-02, p=2.3251e-03, PASSOU
+Tempo decorrido: 62.1s
+
+=== 10 genes / rede 3 [EXPLORATORIO] ===
+TTN=3.9238e-02, GNN=5.5162e-02, p=3.9482e-04, PASSOU
+Tempo decorrido: 95.1s
+
+=== 10 genes / rede 4 [EXPLORATORIO] ===
+TTN=5.4864e-02, GNN=8.5380e-02, p=1.9073e-06, PASSOU
+Tempo decorrido: 125.9s
+
+=== 10 genes / rede 5 [EXPLORATORIO] ===
+TTN=5.2612e-02, GNN=6.5224e-02, p=1.0689e-02, PASSOU
+Tempo decorrido: 161.4s
+
+=== 100 genes / rede 1 [CONFIRMATORIO] ===
+TTN=3.8841e-02, GNN=7.0998e-02, p=1.9073e-06, PASSOU
+Tempo decorrido: 712.3s
+
+=== 100 genes / rede 2 [CONFIRMATORIO] ===
+TTN=3.5323e-02, GNN=5.0060e-02, p=1.9073e-06, PASSOU
+Tempo decorrido: 1091.5s
+
+=== 100 genes / rede 3 [EXPLORATORIO] ===
+TTN=4.0030e-02, GNN=6.2553e-02, p=1.9073e-06, PASSOU
+Tempo decorrido: 1701.1s
+
+=== 100 genes / rede 4 [EXPLORATORIO] ===
+TTN=3.3978e-02, GNN=4.9163e-02, p=1.9073e-06, PASSOU
+Tempo decorrido: 2238.5s
+
+=== 100 genes / rede 5 [EXPLORATORIO] ===
+TTN=3.2868e-02, GNN=5.2657e-02, p=1.9073e-06, PASSOU
+Tempo decorrido: 2850.5s
+
+
+=== RESUMO FINAL ===
+100 genes: 5/5 configs passaram
+10 genes: 4/5 configs passaram (sem criterio de sucesso/falha, descritivo)
+
+H4b-simples (criterio pre-registrado): PASSOU
+  (confirmatorias 100g passando: 2/2, exploratorias 100g passando: 3/3)

@@ -983,3 +983,43 @@ descritivamente, sem criterio de sucesso/falha.
 ### Status
 
 Pre-registrado, ainda nao implementado.
+
+## 30. Resultado H4b: CONFIRMADO (2026-06-30)
+
+### Resultado completo
+
+| Size | Network | Status | TTN MSE | GNN MSE | p | Resultado |
+|---|---|---|---|---|---|---|
+| 10 | 1 | confirmatorio | 8.16e-2 | 7.70e-2 | 0.330 | FALHOU |
+| 10 | 2 | confirmatorio | 7.66e-2 | 8.11e-2 | 2.33e-3 | PASSOU |
+| 10 | 3 | exploratorio | 3.92e-2 | 5.52e-2 | 3.95e-4 | PASSOU |
+| 10 | 4 | exploratorio | 5.49e-2 | 8.54e-2 | 1.9e-6 | PASSOU |
+| 10 | 5 | exploratorio | 5.26e-2 | 6.52e-2 | 1.07e-2 | PASSOU |
+| 100 | 1 | confirmatorio | 3.88e-2 | 7.10e-2 | 1.9e-6 | PASSOU |
+| 100 | 2 | confirmatorio | 3.53e-2 | 5.01e-2 | 1.9e-6 | PASSOU |
+| 100 | 3 | exploratorio | 4.00e-2 | 6.26e-2 | 1.9e-6 | PASSOU |
+| 100 | 4 | exploratorio | 3.40e-2 | 4.92e-2 | 1.9e-6 | PASSOU |
+| 100 | 5 | exploratorio | 3.29e-2 | 5.27e-2 | 1.9e-6 | PASSOU |
+
+H4b-simples CONFIRMADO: 5/5 em 100 genes (2/2 confirmatorias, 3/3
+exploratorias), todas com p=1.9e-6.
+
+### Interpretacao atualizada (corrigindo a leitura do piloto)
+
+O piloto sugeriu vantagem AUSENTE em 10 genes. O protocolo completo
+mostra isso impreciso: 4/5 redes de 10 genes tambem mostram vantagem
+significativa, incluindo uma com p=1.9e-6. Apenas a rede 1 (a unica
+testada no piloto) nao mostrou efeito.
+
+Leitura correta: a vantagem de rollout esta presente na MAIORIA das
+redes em ambas as escalas, mas mais FORTE e CONSISTENTE em 100 genes
+(5/5, p uniformemente minimo) do que em 10 genes (4/5, p variando).
+Mesmo padrao qualitativo de H1/H1b, replicado em tarefa diferente
+(rollout multi-passo).
+
+### Significado para a Fase II
+
+Confirma o pre-requisito tecnico mais simples da Fase II: a vantagem de
+1 passo se transfere para uso em cadeia, sem retreino especifico, de
+forma robusta atraves de multiplas topologias. Nao confirma ainda nada
+sobre dinamica de sistemas reais, atratores ou bifurcacoes.
