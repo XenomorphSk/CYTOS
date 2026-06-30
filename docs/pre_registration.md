@@ -1187,3 +1187,45 @@ TTN > GNN (p<0.05, n=20 seeds) em (ruido baixo, amostra grande). TTN
 ### Status
 
 Pre-registrado, ainda nao implementado.
+
+## 34. Resultado H6: Conclusao Mais Precisa que a Hipotese Original (2026-06-30)
+
+### Resultado
+
+| Condicao | Ruido | N pares treino | TTN | GNN | p | TTN venceu? |
+|---|---|---|---|---|---|---|
+| baixo+grande | 0.01 | 200 | 7.68e-5 | 5.44e-4 | 1.9e-6 | SIM |
+| baixo+pequena | 0.01 | 10 | 2.89e-4 | 3.51e-4 | 3.6e-2 | SIM |
+| alto+grande | 0.3 | 200 | 9.24e-4 | 1.33e-3 | 1.9e-6 | SIM |
+| alto+pequena | 0.3 | 10 | 8.51e-4 | 9.43e-4 | 1.5e-2 | SIM |
+
+TTN venceu nas 4 condicoes, incluindo (ruido alto, amostra pequena) - a
+condicao desenhada para replicar o regime onde H5 falhou. Contradiz a
+hipotese de trabalho de H6.
+
+### Interpretacao (mais precisa que a hipotese original)
+
+Quando a hierarquia e VERDADEIRA POR CONSTRUCAO, a vantagem da TTN e
+ROBUSTA a ruido alto e amostra pequena. Isso elimina ruido e tamanho de
+amostra, isolados, como explicacao suficiente para a falha de H5.
+
+Conclusao mais precisa: o problema nao era quantidade/qualidade do
+sinal estatistico - era que a HIERARQUIA USADA (Louvain sobre PPI, ou
+KEGG pathways) provavelmente NAO REFLETE a estrutura de acoplamento
+dinamico real que governa a dinamica observada. PPI e pathway sao tipos
+de informacao relacionados, mas DIFERENTES de "quais genes tem
+acoplamento dinamico forte" - consistente com H3.
+
+### Sintese da linha de investigacao completa (Fase I -> H5 -> H6)
+
+1. Fase I (Louvain/PPI): hierarquia fragmentada/incorreta - TTN nao venceu.
+2. H5 (KEGG): hierarquia biologica mas nao necessariamente
+   causal-dinamica - TTN perdeu com significancia.
+3. H6 (hierarquia verdadeira, sintetico): TTN venceu robustamente em
+   todas as condicoes de ruido/amostra.
+
+Conclusao integrada: a vantagem da TTN esta condicionada a receber uma
+hierarquia que reflita ACOPLAMENTO DINAMICO real, nao apenas qualquer
+estrutura biologica relacionada. Abre direcao de pesquisa concreta: como
+inferir/aproximar acoplamento dinamico real a partir de dados
+disponiveis, antes de tentar de novo em dados biologicos reais.

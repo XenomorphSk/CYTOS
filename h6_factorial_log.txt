@@ -1,0 +1,20 @@
+
+=== ruido_baixo_amostra_grande (noise_std=0.01, n_pares_treino=200) ===
+TTN=7.6823e-05, GNN=5.4368e-04, p=1.9073e-06
+TTN venceu (significativo)
+Tempo: 593.8s
+
+=== ruido_baixo_amostra_pequena (noise_std=0.01, n_pares_treino=10) ===
+TTN=2.8859e-04, GNN=3.5122e-04, p=3.6234e-02
+TTN venceu (significativo)
+Tempo: 76.7s
+
+=== ruido_alto_amostra_grande (noise_std=0.3, n_pares_treino=200) ===
+TTN=9.2428e-04, GNN=1.3258e-03, p=1.9073e-06
+TTN venceu (significativo)
+Tempo: 456.1s
+
+=== ruido_alto_amostra_pequena (noise_std=0.3, n_pares_treino=10) ===
+TTN=8.5110e-04, GNN=9.4258e-04, p=1.5312e-02
+TTN venceu (significativo)
+Tempo: 88.2s
