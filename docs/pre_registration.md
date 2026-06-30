@@ -1266,3 +1266,15 @@ alcance.
 ### Status
 
 Pre-registrado, ainda nao implementado.
+
+### Emenda (2026-06-30): metodo de linkage trocado para 'ward'
+
+Teste diagnostico (ANTES de treinar qualquer modelo) revelou que o
+linkage 'average' produz encadeamento: um cluster gigante de 217/451
+genes. Comparacao de 3 metodos (average, complete, ward) mostrou 'ward'
+produzindo a distribuicao mais equilibrada (max 39 genes/cluster vs
+217 do average) - escolha de pre-processamento, nao ajuste com base
+em resultado de H7.
+
+Decisao: usar linkage='ward' em vez de 'average', fixado antes de
+rodar o experimento.
