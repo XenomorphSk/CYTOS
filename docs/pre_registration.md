@@ -1105,3 +1105,44 @@ benchmark simulado DREAM4. A extensao para dados reais nesta escala e
 formato nao foi alcancada, apesar de duas tentativas independentes de
 hierarquia (Louvain e KEGG). Reportado como limitacao central, nao
 escondido ou minimizado.
+
+## 33. Pre-Registro - H6: Sistema Sintetico com Hierarquia Verdadeira (2026-06-30)
+
+### Motivacao
+
+H5 eliminou a hipotese de que o problema fosse o metodo de deteccao de
+comunidade. Hipoteses remanescentes: tamanho de amostra pequeno (10
+pares vs centenas no DREAM4) e/ou ruido real nao simulado pelo
+GeneNetWeaver. Isola esses dois fatores usando dados SINTETICOS com
+hierarquia VERDADEIRA POR CONSTRUCAO.
+
+### Geracao de dados sinteticos
+
+x_{t+1} = x_t + dt * (A @ x_t) + ruido, onde A e BLOCO-DIAGONAL POR
+CONSTRUCAO: genes na mesma comunidade tem acoplamento forte (N(0,1)),
+comunidades diferentes tem acoplamento fraco (N(0,0.05)). A particao
+usada para construir A e a mesma usada como hierarquia da TTN.
+
+Parametros: 100 genes, 10 comunidades de 10 genes, dt=0.1.
+
+### Desenho fatorial 2x2
+
+- Ruido: baixo (std 0.01) vs alto (std 0.3).
+- Amostra de treino: pequena (10 pares) vs grande (200 pares).
+
+### Hipotese (H6)
+
+H6: vantagem da TTN presente em (ruido baixo, amostra grande - regime
+DREAM4) e ausente/revertida em (ruido alto, amostra pequena - regime
+H5). Condicoes mistas testam qual fator pesa mais.
+
+H0: vantagem uniforme nas 4 condicoes, independente de ruido/amostra.
+
+### Criterio de sucesso
+
+TTN > GNN (p<0.05, n=20 seeds) em (ruido baixo, amostra grande). TTN
+<=GNN em (ruido alto, amostra pequena). Condicoes mistas descritivas.
+
+### Status
+
+Pre-registrado, ainda nao implementado.
