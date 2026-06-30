@@ -865,3 +865,50 @@ fortes em escala maior.
 
 Fase I declarada INCONCLUSIVA por limitacao estrutural sistematica,
 nao como evidencia contra o metodo no regime onde foi validado.
+
+## 27. Pre-Registro - Fase II (Piloto Exploratorio): Rollout Multi-Passo no DREAM4 (2026-06-30)
+
+### Status explicito
+
+Piloto EXPLORATORIO em benchmark SIMULADO (DREAM4), nao a Fase II completa
+descrita em docs/visao_longo_prazo.md. O pre-requisito documentado para a
+Fase II completa (validacao bem-sucedida em dados reais) NAO foi atendido -
+Fase I permanece inconclusiva (Secao 26). Testa o primeiro componente
+tecnico necessario (predicao multi-passo) no regime controlado onde
+H1/H1b/H2 ja foram validados.
+
+### Motivacao
+
+H1/H1b testam predicao de UM passo. Modelar dinamica de verdade exige
+rollout: predicao em t+1 alimenta predicao de t+2, etc. Erros se acumulam
+de forma que nao aparece no teste de um passo so.
+
+### Hipotese (H4)
+
+H4: TTN com hierarquia correta mantem erro de rollout (MSE acumulado, k
+passos) menor que GNN parametro-casada, ao longo de toda a trajetoria de
+teste.
+
+H0: Sem diferenca significativa, ou TTN degrada mais rapido que GNN.
+
+### Operacionalizacao
+
+1. Usar os mesmos modelos JA TREINADOS para H1/H1b (predicao 1 passo) -
+   NAO retreinar especificamente para rollout.
+2. Rollout autoregresivo a partir do primeiro timepoint real de cada
+   trajetoria de teste, por todo o restante da trajetoria.
+3. Metrica: MSE por passo k (1,2,3...) separadamente, nao so media
+   agregada - para ver a curva de acumulo de erro.
+4. 20 seeds ja treinadas, 2 configs confirmatorias (10 genes rede 1,
+   100 genes rede 1).
+
+### Criterio de sucesso
+
+TTN com MSE de rollout medio menor que GNN, p<0.05 (Wilcoxon, n=20),
+nas 2 configs confirmatorias.
+
+### O que isso NAO testa
+
+Dinamica de sistemas reais, atratores, bifurcacoes - apenas se a
+vantagem de 1 passo persiste em cadeia. Pre-requisito tecnico mais
+simples da Fase II, nao a Fase II em si.
