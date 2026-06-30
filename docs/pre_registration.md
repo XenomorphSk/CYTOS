@@ -1317,3 +1317,45 @@ gap entre benchmark simulado/sintetico e este dataset real permanece
 GENUINAMENTE NAO RESOLVIDO apos tres tentativas independentes de
 hierarquia. A "direcao concreta" proposta na Secao 9 do preprint foi
 testada e tambem falhou - precisa reframing honesto.
+
+## 37. Pre-Registro - H8: Estrutura de Trajetoria Unica vs Multiplas (2026-06-30)
+
+### Motivacao
+
+Das tres hipoteses candidatas remanescentes apos H7, esta e a unica
+isolavel sem especulacao sobre propriedades biologicas nao
+observaveis: a serie real do Spellman e UMA trajetoria longa dividida
+em segmentos contiguos, enquanto DREAM4 e o sintetico de H6 usam
+MULTIPLAS trajetorias verdadeiramente independentes.
+
+### Desenho
+
+Mesmo gerador sintetico de H6 (hierarquia verdadeira, ruido BAIXO -
+cenario mais favoravel), comparando:
+
+- Multiplas trajetorias (replica H6/DREAM4): 10 trajetorias
+  independentes, 20 passos cada.
+- Trajetoria unica (replica Spellman/H5/H7): UMA trajetoria de 200
+  passos (mesmo total de pares), dividida em segmentos CONTIGUOS
+  (60%/20%/20%).
+
+Mesmo total de pares de treino (200), mesmo ruido baixo (0.01), mesma
+hierarquia verdadeira - unica variavel: estrutura de trajetoria.
+
+### Hipotese (H8)
+
+H8: vantagem da TTN e menor/ausente/revertida na condicao trajetoria
+unica, comparada a multiplas trajetorias independentes - mesmo com
+hierarquia verdadeira e ruido baixo.
+
+H0: TTN vence em ambas de forma comparavel - eliminando tambem esta
+hipotese.
+
+### Criterio de sucesso
+
+H8 confirmado se TTN vencer (p<0.05) em multiplas trajetorias MAS nao
+vencer (ou perder) em trajetoria unica, mesma hierarquia/ruido/amostra.
+
+### Status
+
+Pre-registrado, ainda nao implementado.
