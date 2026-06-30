@@ -912,3 +912,34 @@ nas 2 configs confirmatorias.
 Dinamica de sistemas reais, atratores, bifurcacoes - apenas se a
 vantagem de 1 passo persiste em cadeia. Pre-requisito tecnico mais
 simples da Fase II, nao a Fase II em si.
+
+## 28. Resultado H4 (Piloto Rollout): PARCIAL - Nao Confirmado pelo Criterio Pre-Registrado (2026-06-30)
+
+### Resultado
+
+| Config | TTN rollout MSE | GNN rollout MSE | p | H4 |
+|---|---|---|---|---|
+| 10 genes / rede 1 | 0.0799 | 0.0770 | 0.522 | FALHOU |
+| 100 genes / rede 1 | 0.0365 | 0.0710 | 1.8e-12 | PASSOU |
+
+Pelo criterio pre-registrado (ambas as configs confirmatorias precisavam
+passar), H4 NAO e confirmado.
+
+### Padrao observado (interpretacao pos-hoc, explicitamente rotulada como tal)
+
+Em 10 genes, as curvas de erro por passo oscilam sem tendencia clara, e a
+vantagem alterna passo a passo - consistente com ruido. Em 100 genes, a
+TTN mantem vantagem consistente em todos os 20 passos (~2x menor MSE),
+sem degradar mais rapido que a GNN.
+
+Hipotese para teste futuro (NAO testada aqui, precisa pre-registro
+separado): a vantagem de rollout pode ser dependente de escala de rede,
+como a vantagem de correlacao de longo alcance em H1/H1b. Com 2 configs,
+isso e especulacao motivada pelos dados, nao conclusao.
+
+### Status
+
+H4 nao confirmado como hipotese geral. Resultado de 100 genes promissor
+mas isolado. Replicacao com rigor completo (20 seeds, multiplas redes,
+confirmatorio/exploratorio fixado a priori) necessaria antes de qualquer
+afirmacao mais forte.
