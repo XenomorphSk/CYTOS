@@ -75,3 +75,17 @@ If you use this code or build on this result, please cite/link back to this repo
 ## License
 
 Apache License 2.0 — see [LICENSE](LICENSE).
+## Citation
+
+Preprint published on Zenodo: [10.5281/zenodo.21068699](https://doi.org/10.5281/zenodo.21068699)
+
+```bibtex
+@misc{skuraribeiro2026cytos,
+  author = {Skura Ribeiro, Gabriel},
+  title = {Tree Tensor Networks Outperform Parameter-Matched Graph Neural Networks on Gene Regulatory Network Dynamics: A Pre-Registered Falsification Study},
+  year = {2026},
+  publisher = {Zenodo},
+  doi = {10.5281/zenodo.21068699},
+  url = {https://doi.org/10.5281/zenodo.21068699}
+}
+```
