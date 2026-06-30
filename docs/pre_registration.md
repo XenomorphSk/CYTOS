@@ -943,3 +943,43 @@ H4 nao confirmado como hipotese geral. Resultado de 100 genes promissor
 mas isolado. Replicacao com rigor completo (20 seeds, multiplas redes,
 confirmatorio/exploratorio fixado a priori) necessaria antes de qualquer
 afirmacao mais forte.
+
+## 29. Pre-Registro - H4b: Rollout Multi-Passo, Protocolo Completo (2026-06-30)
+
+### Motivacao
+
+O piloto H4 testou apenas 2 configuracoes e sugeriu, sem confirmar, que
+a vantagem de rollout pode ser dependente de escala de rede (forte em
+100 genes, ausente em 10 genes). Este pre-registro testa essa hipotese
+com o mesmo rigor completo de H1/H1b: todas as 5 redes, 2 tamanhos,
+confirmatorio/exploratorio fixado ANTES de rodar.
+
+### Hipotese (H4b)
+
+H4b: a vantagem de rollout da TTN sobre a GNN e maior em redes de 100
+genes do que em redes de 10 genes.
+
+H4b-simples (replicacao do piloto): TTN < GNN em MSE medio de rollout,
+p<0.05 (Wilcoxon, n=20 seeds), em pelo menos 4 das 5 redes de 100 genes
+- nao necessariamente nas redes de 10 genes.
+
+### Confirmatorio vs exploratorio
+
+Mesma convencao de H1/H1b: redes 1 e 2 confirmatorias, redes 3-5
+exploratorias, por tamanho.
+
+### Operacionalizacao
+
+Identica ao piloto H4, repetida para as 5 redes, ambos os tamanhos (10
+configs totais). Sem retreinar modelos especificamente para rollout.
+
+### Criterio de sucesso
+
+H4b-simples: TTN supera GNN (p<0.05) em pelo menos 1 das 2 redes
+confirmatorias de 100 genes, replicado em pelo menos 2 das 3
+exploratorias de 100 genes. Para 10 genes, resultado reportado
+descritivamente, sem criterio de sucesso/falha.
+
+### Status
+
+Pre-registrado, ainda nao implementado.
