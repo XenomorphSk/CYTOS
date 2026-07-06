@@ -1519,3 +1519,55 @@ Resultado inconclusivo para H9 no sentido pre-registrado (H1 e H1b
 precisavam ambos passar). Mas o padrao H1b positivo + H1 negativo e
 novo e especifico, sugerindo que a hierarquia modular do SOS esta
 sendo usada de forma informativa pela TTN, mesmo sem dominar em MSE.
+
+## 41. Pre-Registro - H10: SOS de E. coli com Serie Temporal Genuina (2026-07-06)
+
+### Dataset
+
+Ronen et al. PNAS 2002 (Uri Alon Lab). 4 experimentos independentes
+(Exp1-4), 8 genes SOS (uvrD, lexA, umuD, recA, uvrA, uvrY, ruvA, polB),
+50 timepoints a cada 6 minutos apos exposicao a UV. Exp1+2: UV baixo
+(5 J/m2). Exp3+4: UV alto (20 J/m2). Sem NaN, dados de atividade de
+promotor (GFP/min/OD).
+
+### Diferencas em relacao a H9 (SOS2)
+
+H9 usou perfis cross-condicao (sem relacao temporal genuina). H10 usa
+series temporais reais (t->t+1 com significado biologico genuino):
+o sistema parte do estado basal, responde ao dano de DNA, e retorna
+ao estado basal (atrator). Isso e o regime certo para testar a TTN como
+motor de simulacao de dinamica de estados.
+
+### Decisoes de design (fixadas ANTES de ver qualquer resultado)
+
+1. Normalizacao: z-score por gene por trajetoria (media 0, std 1),
+   padrao da area para dados de expressao, antes de qualquer treino.
+
+2. Split: Exp1+Exp2 = treino (UV baixo), Exp3 = validacao (UV alto),
+   Exp4 = teste (UV alto). Essa divisao testa generalizacao cross-UV
+   (um regime diferente do treino), nao apenas interpolacao.
+   Alternativa mais simples (Exp1+2+3 treino, Exp4 teste) pre-registrada
+   como backup se o split cross-UV nao der poder suficiente.
+
+3. Hierarquia (fixada antes de ver os dados de expressao):
+   - Comunidade 0 (reparacao de dano/NER): uvrD, uvrA, ruvA
+   - Comunidade 1 (reguladores centrais): recA, lexA
+   - Comunidade 2 (mutagenese/tolerancia): umuD, polB
+   - Comunidade 3 (regulador geral): uvrY (singleton)
+   Baseada em biologia molecular estabelecida do SOS, nao em clustering.
+
+4. Grafo de interacoes: gold standard da literatura SOS (mesmas arestas
+   conhecidas usadas em H9, adaptadas para os 8 genes do Ronen).
+
+### Hipotese (H10)
+
+H10: TTN com hierarquia biologica SOS supera GNN parametro-casada em
+MSE/parametro E em correlacao de longo alcance, em series temporais
+genuinas do sistema SOS. Se H10 passar, confirma que o formato
+cross-condicao (H9) e nao a biologia do sistema era o fator limitante.
+Se H10 falhar tambem, a hipotese 3 remanescente (dinamica real nao tem
+estrutura modular recuperavel) ganha suporte adicional.
+
+### Status
+
+Pre-registrado, ainda nao implementado.
