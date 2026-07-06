@@ -1435,3 +1435,33 @@ como trajetorias independentes (split 2/0.5/0.5 replicas).
 ### Status
 
 Pre-registrado. Aguardando dados (material suplementar Bansal 2006).
+
+### Emenda ao H9 (2026-07-06): substituicao de dataset e design adaptado
+
+Apos inspecionar os dados:
+- SOS1 (9 amostras): dois outliers severos (ssb=10.5 com media=0.02;
+  rpoH=26.6 com media=2.9). Nao utilizavel sem limpeza arbitraria.
+  DESCARTADO.
+- SOS2 (466 perfis × 9 genes, Kotiang & Eslami 2020): limpo, sem NaN,
+  escala log2 normalizada (4.9-13.8). USADO.
+
+Consequencia para o design: SOS2 contem perfis de CONDICOES DISTINTAS,
+nao uma serie temporal continua. Nao ha pares t->t+1 de trajetoria
+genuina - em vez disso, perfis independentes de expressao em diferentes
+condicoes experimentais. Adaptacao pre-registrada (ANTES de rodar):
+
+1. Split 60/20/20 por PERFIL (nao por trajetoria): 279 treino, 93 val,
+   94 teste - shuffle com seed fixo (seed=0) antes do split.
+2. Par de treino: (perfil_i, perfil_j) com i!=j, amostrados
+   aleatoriamente - nao ha "proximo timepoint" genuino. Isso e uma
+   aproximacao necessaria, documentada como limitacao.
+3. Hierarquia: mantida conforme Secao 39 (dois modulos funcionais SOS,
+   fixados antes de ver qualquer resultado).
+4. Metrica de avaliacao: MSE de reconstrucao (predizer o perfil j a
+   partir do perfil i), nao predicao temporal genuina. Isso e menos
+   rigoroso que as configs do DREAM4, documentado como limitacao.
+
+H9 passa a ser um teste de "reconstrucao de expressao cross-condicao"
+em vez de "predicao temporal" - ainda relevante para a hipotese
+(a TTN com hierarquia correta deveria capturar melhor a estrutura
+modular mesmo neste regime), mas mais fraco como evidencia.
