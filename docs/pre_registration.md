@@ -1465,3 +1465,57 @@ H9 passa a ser um teste de "reconstrucao de expressao cross-condicao"
 em vez de "predicao temporal" - ainda relevante para a hipotese
 (a TTN com hierarquia correta deveria capturar melhor a estrutura
 modular mesmo neste regime), mas mais fraco como evidencia.
+
+## 40. Resultado H9: MISTO - H1 Falhou, H1b Passou (2026-07-06)
+
+### Resultado
+
+| Metrica | TTN (SOS hierarquia) | GNN | p | Resultado |
+|---|---|---|---|---|
+| MSE/param (H1) | 6.77e-1 | 1.02e-1 | 1.9e-6 | FALHOU (GNN 6.7x melhor) |
+| Long-range corr (H1b) | +0.224 | -0.448 | 6.8e-140 | PASSOU |
+
+### Interpretacao
+
+Os dois resultados combinados dizem algo especifico: a GNN aprende a
+reconstruir o perfil medio de cada gene razoavelmente bem (MSE baixo),
+mas ao custo de ignorar completamente as relacoes entre genes de
+modulos diferentes - tanto que suas predicoes de longo alcance ficam
+com correlacao NEGATIVA (anti-correlacionadas com as diferencas reais
+entre genes de comunidades distintas). A TTN tem MSE pior, mas captura
+alguma estrutura real de longo alcance (correlacao positiva).
+
+H1b passou pelas razoes CERTAS: a hierarquia modular do SOS (dois
+modulos funcionais estabelecidos experimentalmente) parece estar sendo
+usada pela TTN de forma informativa pra capturar relacoes cross-modulo,
+enquanto a GNN sem essa estrutura as ignora completamente (correlacao
+negativa e muito improvavel por acaso, p=6.8e-140).
+
+H1 falhou possivelmente pelas razoes CERTAS tambem: com 9 genes e
+bond_dim=2, a TTN tem uma estrutura multilinear muito pequena para
+reconstruir perfis individuais de forma competitiva com uma GNN de
+hidden_dim=24 num sinal tao ruidoso (cross-condition pairing, nao
+predicao temporal genuina). O trade-off eficiencia parametrica vs
+MSE pode refletir que a TTN "gasta" seus parametros capturando
+estrutura de longo alcance, nao minimizando MSE individual de gene.
+
+### Relacao com a hipotese 3 remanescente (Secao 36/38)
+
+Este resultado e diferente de todos os anteriores (H5, H7) onde a
+GNN dominava em AMBAS as metricas. Aqui, a TTN falha em MSE mas
+vence esmagadoramente em longo alcance - o que sugere que a estrutura
+modular do SOS (hierarquia biologicamente correta) esta sendo capturada
+de alguma forma, mesmo que nao seja suficiente para vencer em MSE total.
+
+Isso nao confirma nem nega a hipotese 3 (que a dinamica real pode nao
+ter estrutura modular linear recuperavel): a diferenca entre SOS e
+Spellman pode ser a QUALIDADE da hierarquia fornecida (modulos SOS
+sao mais "corretos" experimentalmente) ou pode ser outra propriedade
+do dataset (cross-condition vs serie temporal, numero de genes, etc).
+
+### Status
+
+Resultado inconclusivo para H9 no sentido pre-registrado (H1 e H1b
+precisavam ambos passar). Mas o padrao H1b positivo + H1 negativo e
+novo e especifico, sugerindo que a hierarquia modular do SOS esta
+sendo usada de forma informativa pela TTN, mesmo sem dominar em MSE.
