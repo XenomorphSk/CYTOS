@@ -1571,3 +1571,46 @@ estrutura modular recuperavel) ganha suporte adicional.
 ### Status
 
 Pre-registrado, ainda nao implementado.
+
+## 42. Resultado H10: FALHOU em Ambas as Metricas (2026-07-06)
+
+### Resultado
+
+| Metrica | TTN (hierarquia SOS) | GNN | p | Resultado |
+|---|---|---|---|---|
+| MSE/param (H1) | 5.18e-3 | 3.12e-3 | 1.9e-6 | FALHOU (GNN 1.66x melhor) |
+| Long-range corr (H1b) | 0.439 | 0.692 | 8.7e-67 | FALHOU (GNN maior) |
+
+### Diferenca critica em relacao a H9
+
+Em H9 (cross-condicao), H1b passou porque a GNN tinha correlacao de
+longo alcance NEGATIVA (-0.447) enquanto a TTN tinha positiva (+0.224).
+Em H10 (temporal genuino), a GNN tem correlacao POSITIVA e MAIOR
+(0.692 vs 0.439 da TTN). Isso elimina o formato cross-condicao como
+explicacao para o resultado positivo de H1b em H9.
+
+### Conclusao da cadeia de eliminacao
+
+Das quatro hipoteses candidatas testadas apos os fracassos iniciais
+(H5, H7):
+
+1. Ruido de medicao e tamanho de amostra - ELIMINADO por H6
+2. Estrutura de trajetoria (unica vs multipla) - ELIMINADO por H8
+3. Formato cross-condicao vs temporal - ELIMINADO por H10
+4. Dinamica biologica real pode nao ter estrutura modular quasi-linear
+   recuperavel nessa escala - NAO ELIMINADO, agora candidata unica
+
+Com H10, quatro experimentos independentes consecutivos (H5, H7, H9,
+H10) com sistemas e formatos diferentes falharam, enquanto os sinteticos
+(H6, H8) com hierarquia verdadeira por construcao passaram
+consistentemente. A hipotese 4 e agora a conclusao mais parcimoiosa.
+
+### Implicacao para o roadmap
+
+A hipotese 4 nao implica que TTNs sao inutils em biologia - implica
+que o regime onde a vantagem aparece (hierarquia modular quasi-linear
+genuinamente presente nos dados) pode nao incluir os sistemas testados
+(ciclo celular de levedura, resposta SOS de E. coli em escala de 8-9
+genes). Sistemas com modularidade mais forte, mais genes, ou dados de
+maior volume podem estar fora desse regime de fracasso. O proximo passo
+logico e identificar esse regime, nao abandonar a abordagem.
