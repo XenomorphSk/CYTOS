@@ -1389,3 +1389,49 @@ dinamica biologica real (nao-linear, com realimentacao complexa, ou
 genuinamente sem particao modular fixa recuperavel), nao sobre o
 protocolo experimental. Hipotese mais provavel, nao conclusao
 estabelecida - testar rigorosamente exigiria ferramentas adicionais.
+
+## 39. Pre-Registro - H9: Sistema SOS de E. coli (2026-07-06)
+
+### Motivacao
+
+H8 eliminou estrutura de trajetoria como causa do gap. Resta a hipotese
+3 (Secao 36/38): a dinamica real pode nao ter estrutura modular linear
+recuperavel. O sistema SOS de E. coli e diferente do ciclo celular de
+levedura: a estrutura regulatoria esta experimentalmente bem estabelecida.
+
+Os 9 genes (recA, lexA, Ssb, recF, dinI, umuDC, rpoD, rpoH, rpoS) tem
+dois modulos funcionais claros confirmados experimentalmente:
+- Modulo reparacao/resposta ao dano: recA, lexA, recF, dinI, umuDC
+- Modulo fatores sigma/stress: rpoD, rpoH, rpoS
+Ssb conectando os dois (singleton/conector).
+
+### Dataset alvo
+
+Bansal, Della Gatta, di Bernardo (2006), Bioinformatics 22(7):815-822.
+9 genes SOS de E. coli, 6 timepoints em triplicata, tratamento com
+Norfloxacin. 52 conexoes documentadas como gold standard.
+
+### Hierarquia (fixada ANTES de ver os dados de expressao)
+
+- Comunidade 0: recA, lexA, recF, dinI, umuDC (modulo reparacao)
+- Comunidade 1: rpoD, rpoH, rpoS (modulo fatores sigma)
+- Comunidade 2: Ssb (singleton, conector)
+
+Derivada de 30+ anos de biologia molecular do SOS, nao de clustering.
+
+### Hipotese (H9)
+
+H9: TTN com hierarquia SOS supera GNN parametro-casada na previsao de
+dinamica desse sistema.
+
+H0: Sem diferenca ou GNN vence - completaria a cadeia de eliminacao
+apontando para propriedades distribucionais especificas do microarray.
+
+### Criterio de sucesso
+
+TTN > GNN (p<0.05, n=20 seeds) em MSE/parametro, usando as 3 replicas
+como trajetorias independentes (split 2/0.5/0.5 replicas).
+
+### Status
+
+Pre-registrado. Aguardando dados (material suplementar Bansal 2006).
